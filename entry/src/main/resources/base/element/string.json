@@ -311,6 +311,58 @@
     {
       "name": "settings_awake_desc",
       "value": "Prevent device from sleeping while the app is in the foreground"
+    },
+    {
+      "name": "about_help",
+      "value": "HELP US"
+    },
+    {
+      "name": "about_social",
+      "value": "SOCIAL"
+    },
+    {
+      "name": "about_category_info",
+      "value": "APP INFO"
+    },
+    {
+      "name": "about_donate",
+      "value": "Donate"
+    },
+    {
+      "name": "about_translate",
+      "value": "Translate"
+    },
+    {
+      "name": "about_rate",
+      "value": "Rate this app"
+    },
+    {
+      "name": "about_github",
+      "value": "GitHub"
+    },
+    {
+      "name": "about_discord",
+      "value": "Discord"
+    },
+    {
+      "name": "about_license",
+      "value": "License GPL 3.0"
+    },
+    {
+      "name": "about_privacy_policy",
+      "value": "Privacy policy"
+    },
+    {
+      "name": "about_app_version",
+      "value": "Version 3.2.0 (53)"
+    },
+    {
+      "name": "about_made_in_france",
+      "value": "Made with ❤️ in France"
+    },
+    {
+      "name": "about_thanks_toast",
+      "value": "Thanks for using OpenCalc ❤️"
     }
   ]
 }
