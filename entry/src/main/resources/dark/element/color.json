@@ -15,6 +15,18 @@
     {
       "name": "brand_soft",
       "value": "#338AB4F8"
-    }
+    },
+    { "name": "calculator_panel", "value": "#2A3944" },
+    { "name": "calculator_key_digit", "value": "#2B2B2B" },
+    { "name": "calculator_key_op", "value": "#2A3944" },
+    { "name": "calculator_key_clear", "value": "#3A3550" },
+    { "name": "calculator_key_equals", "value": "#2F4B5C" },
+    { "name": "calculator_error", "value": "#F44B3F" },
+    { "name": "calculator_paypal", "value": "#003087" },
+    { "name": "calculator_bmac", "value": "#FFDD00" },
+    { "name": "calculator_github", "value": "#24292E" },
+    { "name": "calculator_heart", "value": "#EA4AAA" },
+    { "name": "calculator_white", "value": "#FFFFFF" },
+    { "name": "calculator_black", "value": "#1A1A1A" }
   ]
 }
