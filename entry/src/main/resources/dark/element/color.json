@@ -69,6 +69,10 @@
       "value": "#1A1A1A"
     },
     {
+      "name": "calculator_accent_text",
+      "value": "#8AB4F8"
+    },
+    {
       "name": "settings_header",
       "value": "#8AB4F8"
     },

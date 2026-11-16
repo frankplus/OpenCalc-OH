@@ -2,10 +2,12 @@ import { AppColors, Size, Type } from '../../theme/Theme';
 
 // One calculator key. kind: 0 digit, 1 operator, 2 clear, 3 equals, 4 flat (no background).
 // The cell takes the row's weight; the key inside is a circle (basic) or a pill (pill = true).
+// dot: the decimal point key, drawn as a filled dot so it reads as clearly as the digits.
 @ComponentV2
 export struct CalcKey {
   @Param label: ResourceStr = '';
   @Param symbol: Resource | undefined = undefined;
+  @Param dot: boolean = false;
   @Param eid: string = '';
   @Param kind: number = 0;
   @Param keyHeight: number = 64;
@@ -33,6 +35,10 @@ export struct CalcKey {
     return $r('app.color.calculator_key_equals');
   }
 
+  private keyWidth(): Length {
+    return this.pill || this.kind === 4 ? '92%' : this.keyHeight;
+  }
+
   @Builder
   insertMenu() {
     Menu() {
@@ -43,17 +49,22 @@ export struct CalcKey {
 
   build() {
     Row() {
-      if (this.symbol !== undefined) {
+      if (this.symbol !== undefined || this.dot) {
         Column() {
-          SymbolGlyph(this.symbol).fontSize(Size.icon).fontColor([AppColors.textPrimary])
+          if (this.dot) {
+            Circle().width(9).height(9).fill(AppColors.textPrimary)
+          } else if (this.symbol !== undefined) {
+            SymbolGlyph(this.symbol).fontSize(Size.icon).fontColor([AppColors.textPrimary])
+          }
         }
         .id(this.eid)
-        .width(this.pill ? '92%' : this.keyHeight)
+        .width(this.keyWidth())
         .height(this.keyHeight)
         .justifyContent(FlexAlign.Center)
         .alignItems(HorizontalAlign.Center)
         .backgroundColor(this.fill())
         .borderRadius(this.keyHeight / 2)
+        .accessibilityText(this.label as Resource)
         .onClick(() => { this.onTap(); })
         .gesture(LongPressGesture().onAction(() => { this.onLong(); }))
       } else {
@@ -63,7 +74,7 @@ export struct CalcKey {
           .fontColor(AppColors.textPrimary)
           .backgroundColor(this.fill())
           .borderRadius(this.keyHeight / 2)
-          .width(this.pill || this.kind === 4 ? '92%' : this.keyHeight)
+          .width(this.keyWidth())
           .height(this.keyHeight)
           .padding(0)
           .onClick(() => { this.onTap(); })

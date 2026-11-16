@@ -205,6 +205,18 @@
       "value": "History"
     },
     {
+      "name": "calculator_point",
+      "value": "Point"
+    },
+    {
+      "name": "calculator_scientific",
+      "value": "Scientific mode switch"
+    },
+    {
+      "name": "calculator_delete",
+      "value": "Delete"
+    },
+    {
       "name": "settings_general",
       "value": "GENERAL"
     },
