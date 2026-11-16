@@ -51,7 +51,7 @@ export struct AboutPage {
       .width('100%')
       .constraintSize({ minHeight: 24 })
       .fontSize(Type.caption)
-      .fontColor(AppColors.brand)
+      .fontColor($r('app.color.about_header'))
       .padding({ left: Space.l, right: Space.l, top: Space.m })
   }
 
@@ -68,17 +68,17 @@ export struct AboutPage {
           Scroll() {
             Column() {
               this.header($r('app.string.about_help'), 'about_help')
-              AboutRow({ symbol: $r('sys.symbol.heart'), label: $r('app.string.about_donate'), eid: 'about_donate', onTap: () => {} })
-              AboutRow({ symbol: $r('sys.symbol.paperplane'), label: $r('app.string.about_translate'), eid: 'about_translate', onTap: () => { this.openUrl(URL_TRANSLATE); } })
+              AboutRow({ symbol: $r('sys.symbol.creditcard'), label: $r('app.string.about_donate'), eid: 'about_donate', onTap: () => {} })
+              AboutRow({ symbol: $r('sys.symbol.textformat'), label: $r('app.string.about_translate'), eid: 'about_translate', onTap: () => { this.openUrl(URL_TRANSLATE); } })
               AboutRow({ symbol: $r('sys.symbol.star'), label: $r('app.string.about_rate'), eid: 'about_rate', onTap: () => { this.openUrl(URL_RATE); } })
               Divider().color(AppColors.divider)
               this.header($r('app.string.about_social'), 'about_social')
-              AboutRow({ symbol: $r('sys.symbol.link'), label: $r('app.string.about_github'), eid: 'about_github', onTap: () => { this.openUrl(URL_GITHUB); } })
-              AboutRow({ symbol: $r('sys.symbol.message'), label: $r('app.string.about_discord'), eid: 'about_discord', onTap: () => { this.openUrl(URL_DISCORD); } })
+              AboutRow({ symbol: $r('sys.symbol.keyboard'), label: $r('app.string.about_github'), eid: 'about_github', onTap: () => { this.openUrl(URL_GITHUB); } })
+              AboutRow({ symbol: $r('sys.symbol.person_2'), label: $r('app.string.about_discord'), eid: 'about_discord', onTap: () => { this.openUrl(URL_DISCORD); } })
               Divider().color(AppColors.divider)
               this.header($r('app.string.about_category_info'), 'about_category_info')
               AboutRow({ symbol: $r('sys.symbol.doc_text'), label: $r('app.string.about_license'), eid: 'about_license', onTap: () => { this.openUrl(URL_LICENSE); } })
-              AboutRow({ symbol: $r('sys.symbol.lock'), label: $r('app.string.about_privacy_policy'), eid: 'about_privacy_policy', onTap: () => { this.openUrl(URL_PRIVACY); } })
+              AboutRow({ symbol: $r('sys.symbol.eye_slash'), label: $r('app.string.about_privacy_policy'), eid: 'about_privacy_policy', onTap: () => { this.openUrl(URL_PRIVACY); } })
               AboutRow({ symbol: $r('sys.symbol.info_circle'), label: $r('app.string.about_app_version'), eid: 'about_app_version', onTap: () => { this.tapVersion(); } })
               Divider().color(AppColors.divider)
               Text($r('app.string.about_made_in_france'))

@@ -71,6 +71,10 @@
     {
       "name": "settings_header",
       "value": "#1A6FB5"
+    },
+    {
+      "name": "about_header",
+      "value": "#1565C0"
     }
   ]
 }
