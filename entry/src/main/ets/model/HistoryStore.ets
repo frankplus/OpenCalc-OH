@@ -171,7 +171,11 @@ export class HistoryStore {
     let month = '';
     try {
       if (this.context !== null) {
-        month = this.context.resourceManager.getStringByNameSync('HistoryStore_month_' + (d.getMonth() + 1));
+        month = this.context.resourceManager.getStringByNameSync(
+          ['HistoryStore_month_1', 'HistoryStore_month_2', 'HistoryStore_month_3', 'HistoryStore_month_4',
+            'HistoryStore_month_5', 'HistoryStore_month_6', 'HistoryStore_month_7', 'HistoryStore_month_8',
+            'HistoryStore_month_9', 'HistoryStore_month_10', 'HistoryStore_month_11',
+            'HistoryStore_month_12'][d.getMonth()]);
       }
     } catch (e) {
       hilog.error(0x0001, TAG, 'month name failed: %{public}s', JSON.stringify(e));

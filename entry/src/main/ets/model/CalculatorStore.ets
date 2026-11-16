@@ -21,6 +21,33 @@ function failed(error: string, value: string = ''): CalcResult {
   return r;
 }
 
+/** Java's %.4g: 4 significant digits, half-up, E notation outside 1e-4 <= x < 1e4. */
+function formatG4(v: number): string {
+  const sign = v < 0 ? '-' : '';
+  const abs = Math.abs(v);
+  let exp = Math.floor(Math.log10(abs));
+  const scaled = (e: number): number => (e >= 3 ? Math.round(abs / Math.pow(10, e - 3)) : Math.round(abs * Math.pow(10, 3 - e)));
+  let m = scaled(exp);
+  if (m >= 10000) {
+    exp += 1;
+    m = scaled(exp);
+  } else if (m < 1000) {
+    exp -= 1;
+    m = scaled(exp);
+  }
+  const digits = m.toString();
+  if (exp >= 4 || exp < -4) {
+    return sign + digits[0] + '.' + digits.substring(1) + 'E' + (exp >= 0 ? '+' : '-') + Math.abs(exp);
+  }
+  if (exp >= 3) {
+    return sign + digits;
+  }
+  if (exp >= 0) {
+    return sign + digits.substring(0, exp + 1) + '.' + digits.substring(exp + 1);
+  }
+  return sign + '0.' + '0'.repeat(-exp - 1) + digits;
+}
+
 export class CalculatorStore {
   private static instance: CalculatorStore | null = null;
 
@@ -72,9 +99,10 @@ export class CalculatorStore {
     }
     const result = new CalcResult();
     result.ok = true;
-    const abs = Math.abs(v);
-    if (scientificNotation && v !== 0 && (abs >= 9999 || abs <= 0.1)) {
-      result.value = v.toExponential(3).replace('e', 'E');
+    const rv = Number(roundedText(v, precision));
+    const abs = Math.abs(rv);
+    if (scientificNotation && rv !== 0 && (abs >= 9999 || abs <= 0.1)) {
+      result.value = formatG4(rv);
       return result;
     }
     const text = trimNumberText(roundedText(v, precision));
