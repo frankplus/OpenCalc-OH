@@ -1,5 +1,6 @@
-import { AppColors, Radius, Space, Type } from '../theme/Theme';
-import { AppBar, ChoiceRow, ListRow, ToggleRow, SectionHeader } from '../kit/Kit';
+import { AppColors, Radius, Size, Space, Type } from '../theme/Theme';
+import { ChoiceRow, IconButton } from '../kit/Kit';
+import { SettingHeader, SettingRow } from '../components/settings/SettingRow';
 import { CalcSettings } from '../model/CalcSettings';
 import { SettingsStore } from '../model/SettingsStore';
 import { hilog } from '@kit.PerformanceAnalysisKit';
@@ -115,28 +116,40 @@ export struct SettingsPage {
     NavDestination() {
       Stack({ alignContent: Alignment.Center }) {
         Column() {
-          AppBar({ title: $r('app.string.title_Settings'), backId: 'settings_back_button', titleId: 'settings_back_button_text', onBack: () => { this.pathStack.pop(); } })
+          Row() {
+            IconButton({ symbol: $r('sys.symbol.arrow_left'), label: $r('app.string.title_Settings'), eid: 'settings_back_button', onTap: () => { this.pathStack.pop(); } })
+            Text($r('app.string.title_Settings'))
+              .fontSize(Type.title)
+              .fontWeight(FontWeight.Bold)
+              .fontColor(AppColors.textPrimary)
+              .margin({ left: Space.s })
+              .id('settings_back_button_text')
+          }
+          .width('100%')
+          .height(Size.appBar)
+          .padding({ left: Space.s, right: Space.l })
+          .alignItems(VerticalAlign.Center)
           Scroll() {
             Column() {
-              SectionHeader({ title: $r('app.string.settings_general') })
-              ListRow({ title: $r('app.string.settings_language_title'), subtitle: this.language, eid: 'settings_language', subtitleId: 'settings_language_summary' })
-              ListRow({ title: $r('app.string.settings_theme_title'), subtitle: this.store.themeName(this.s.themeStyle), eid: 'settings_theme', subtitleId: 'settings_theme_summary', onTap: () => { this.dialog = 1; } })
-              ListRow({ title: $r('app.string.settings_numbering_title'), subtitle: this.store.numberingSystemName(this.s.numberingSystem), eid: 'settings_numbering_system', subtitleId: 'settings_numbering_system_summary', onTap: () => { this.dialog = 2; } })
-              ToggleRow({ title: $r('app.string.settings_vibration_title'), subtitle: $r('app.string.settings_vibration_desc'), isOn: this.s.vibrationMode, eid: 'settings_vibration_switch', onChange: (v: boolean) => { this.change((n: CalcSettings) => { n.vibrationMode = v; }); } })
-              ToggleRow({ title: $r('app.string.settings_radians_title'), subtitle: $r('app.string.settings_radians_desc'), isOn: this.s.useRadiansByDefault, eid: 'settings_radians_switch', onChange: (v: boolean) => { this.change((n: CalcSettings) => { n.useRadiansByDefault = v; }); } })
-              ToggleRow({ title: $r('app.string.settings_scientific_title'), subtitle: $r('app.string.settings_scientific_desc'), isOn: this.s.scientificModeByDefault, eid: 'settings_scientific_mode_switch', onChange: (v: boolean) => { this.change((n: CalcSettings) => { n.scientificModeByDefault = v; }); } })
-              ToggleRow({ title: $r('app.string.settings_split_title'), subtitle: $r('app.string.settings_split_desc'), isOn: this.s.splitParenthesisButton, eid: 'settings_split_parenthesis_switch', onChange: (v: boolean) => { this.change((n: CalcSettings) => { n.splitParenthesisButton = v; }); } })
-              ToggleRow({ title: $r('app.string.settings_modulo_title'), subtitle: $r('app.string.settings_modulo_desc'), isOn: this.s.addModuloButton, eid: 'settings_modulo_switch', onChange: (v: boolean) => { this.change((n: CalcSettings) => { n.addModuloButton = v; }); } })
-              SectionHeader({ title: $r('app.string.settings_formatting') })
-              ListRow({ title: $r('app.string.settings_precision_title'), subtitle: this.store.precisionLabel(this.s.numberPrecision), eid: 'settings_precision', subtitleId: 'settings_precision_summary', onTap: () => { this.dialog = 3; } })
-              ToggleRow({ title: $r('app.string.settings_sci_notation_title'), subtitle: $r('app.string.settings_sci_notation_desc'), isOn: this.s.numberIntoScientificNotation, eid: 'settings_scientific_notation_switch', onChange: (v: boolean) => { this.change((n: CalcSettings) => { n.numberIntoScientificNotation = v; }); } })
-              SectionHeader({ title: $r('app.string.settings_history') })
-              ListRow({ title: $r('app.string.settings_history_size_title'), subtitle: this.store.historySizeLabel(this.s.historySize), eid: 'settings_history_size', subtitleId: 'settings_history_size_summary', onTap: () => { this.dialog = 4; } })
-              ToggleRow({ title: $r('app.string.settings_swipe_title'), subtitle: $r('app.string.settings_swipe_desc'), isOn: this.s.deleteHistoryOnSwipe, eid: 'settings_delete_on_swipe_switch', onChange: (v: boolean) => { this.change((n: CalcSettings) => { n.deleteHistoryOnSwipe = v; }); } })
-              ToggleRow({ title: $r('app.string.settings_autosave_title'), subtitle: $r('app.string.settings_autosave_desc'), isOn: this.s.autoSaveCalculationWithoutEqualButton, eid: 'settings_auto_save_switch', onChange: (v: boolean) => { this.change((n: CalcSettings) => { n.autoSaveCalculationWithoutEqualButton = v; }); } })
-              SectionHeader({ title: $r('app.string.settings_advanced') })
-              ToggleRow({ title: $r('app.string.settings_longpress_title'), subtitle: $r('app.string.settings_longpress_desc'), isOn: this.s.longClickToCopyValue, eid: 'settings_long_click_copy_switch', onChange: (v: boolean) => { this.change((n: CalcSettings) => { n.longClickToCopyValue = v; }); } })
-              ToggleRow({ title: $r('app.string.settings_awake_title'), subtitle: $r('app.string.settings_awake_desc'), isOn: this.s.preventPhoneFromSleepingMode, eid: 'settings_prevent_sleep_switch', onChange: (v: boolean) => { this.change((n: CalcSettings) => { n.preventPhoneFromSleepingMode = v; }); } })
+              SettingHeader({ title: $r('app.string.settings_general') })
+              SettingRow({ symbol: $r('sys.symbol.local'), title: $r('app.string.settings_language_title'), summary: this.language, eid: 'settings_language', summaryId: 'settings_language_summary' })
+              SettingRow({ symbol: $r('sys.symbol.paintpalette'), title: $r('app.string.settings_theme_title'), summary: this.store.themeName(this.s.themeStyle), eid: 'settings_theme', summaryId: 'settings_theme_summary', onTap: () => { this.dialog = 1; } })
+              SettingRow({ symbol: $r('sys.symbol.list_number'), title: $r('app.string.settings_numbering_title'), summary: this.store.numberingSystemName(this.s.numberingSystem), eid: 'settings_numbering_system', summaryId: 'settings_numbering_system_summary', onTap: () => { this.dialog = 2; } })
+              SettingRow({ symbol: $r('sys.symbol.waveform'), title: $r('app.string.settings_vibration_title'), summary: $r('app.string.settings_vibration_desc'), hasSwitch: true, isOn: this.s.vibrationMode, eid: 'settings_vibration_switch', onChange: (v: boolean) => { this.change((n: CalcSettings) => { n.vibrationMode = v; }); } })
+              SettingRow({ symbol: $r('sys.symbol.timer'), title: $r('app.string.settings_radians_title'), summary: $r('app.string.settings_radians_desc'), hasSwitch: true, isOn: this.s.useRadiansByDefault, eid: 'settings_radians_switch', onChange: (v: boolean) => { this.change((n: CalcSettings) => { n.useRadiansByDefault = v; }); } })
+              SettingRow({ symbol: $r('sys.symbol.calculator'), title: $r('app.string.settings_scientific_title'), summary: $r('app.string.settings_scientific_desc'), hasSwitch: true, isOn: this.s.scientificModeByDefault, eid: 'settings_scientific_mode_switch', onChange: (v: boolean) => { this.change((n: CalcSettings) => { n.scientificModeByDefault = v; }); } })
+              SettingRow({ symbol: $r('sys.symbol.square_grid_2x2'), title: $r('app.string.settings_split_title'), summary: $r('app.string.settings_split_desc'), hasSwitch: true, isOn: this.s.splitParenthesisButton, eid: 'settings_split_parenthesis_switch', onChange: (v: boolean) => { this.change((n: CalcSettings) => { n.splitParenthesisButton = v; }); } })
+              SettingRow({ symbol: $r('sys.symbol.minus_circle'), title: $r('app.string.settings_modulo_title'), summary: $r('app.string.settings_modulo_desc'), hasSwitch: true, isOn: this.s.addModuloButton, eid: 'settings_modulo_switch', onChange: (v: boolean) => { this.change((n: CalcSettings) => { n.addModuloButton = v; }); } })
+              SettingHeader({ title: $r('app.string.settings_formatting') })
+              SettingRow({ symbol: $r('sys.symbol.textformat'), title: $r('app.string.settings_precision_title'), summary: this.store.precisionLabel(this.s.numberPrecision), eid: 'settings_precision', summaryId: 'settings_precision_summary', onTap: () => { this.dialog = 3; } })
+              SettingRow({ symbol: $r('sys.symbol.flame'), title: $r('app.string.settings_sci_notation_title'), summary: $r('app.string.settings_sci_notation_desc'), hasSwitch: true, isOn: this.s.numberIntoScientificNotation, eid: 'settings_scientific_notation_switch', onChange: (v: boolean) => { this.change((n: CalcSettings) => { n.numberIntoScientificNotation = v; }); } })
+              SettingHeader({ title: $r('app.string.settings_history') })
+              SettingRow({ symbol: $r('sys.symbol.arrow_counterclockwise_clock'), title: $r('app.string.settings_history_size_title'), summary: this.store.historySizeLabel(this.s.historySize), eid: 'settings_history_size', summaryId: 'settings_history_size_summary', onTap: () => { this.dialog = 4; } })
+              SettingRow({ symbol: $r('sys.symbol.trash'), title: $r('app.string.settings_swipe_title'), summary: $r('app.string.settings_swipe_desc'), hasSwitch: true, isOn: this.s.deleteHistoryOnSwipe, eid: 'settings_delete_on_swipe_switch', onChange: (v: boolean) => { this.change((n: CalcSettings) => { n.deleteHistoryOnSwipe = v; }); } })
+              SettingRow({ symbol: $r('sys.symbol.save'), title: $r('app.string.settings_autosave_title'), summary: $r('app.string.settings_autosave_desc'), hasSwitch: true, isOn: this.s.autoSaveCalculationWithoutEqualButton, eid: 'settings_auto_save_switch', onChange: (v: boolean) => { this.change((n: CalcSettings) => { n.autoSaveCalculationWithoutEqualButton = v; }); } })
+              SettingHeader({ title: $r('app.string.settings_advanced') })
+              SettingRow({ symbol: $r('sys.symbol.paperclip'), title: $r('app.string.settings_longpress_title'), summary: $r('app.string.settings_longpress_desc'), hasSwitch: true, isOn: this.s.longClickToCopyValue, eid: 'settings_long_click_copy_switch', onChange: (v: boolean) => { this.change((n: CalcSettings) => { n.longClickToCopyValue = v; }); } })
+              SettingRow({ symbol: $r('sys.symbol.sun_max'), title: $r('app.string.settings_awake_title'), summary: $r('app.string.settings_awake_desc'), hasSwitch: true, isOn: this.s.preventPhoneFromSleepingMode, eid: 'settings_prevent_sleep_switch', onChange: (v: boolean) => { this.change((n: CalcSettings) => { n.preventPhoneFromSleepingMode = v; }); } })
             }
             .width('100%')
           }

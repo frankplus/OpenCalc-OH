@@ -21,6 +21,7 @@
     { "name": "calculator_key_op", "value": "#D2E4F3" },
     { "name": "calculator_key_clear", "value": "#E3DCFB" },
     { "name": "calculator_key_equals", "value": "#C2E7FB" },
+    { "name": "settings_header", "value": "#1A6FB5" },
     { "name": "calculator_error", "value": "#F44B3F" },
     { "name": "calculator_paypal", "value": "#003087" },
     { "name": "calculator_bmac", "value": "#FFDD00" },
