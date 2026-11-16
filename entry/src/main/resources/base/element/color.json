@@ -16,18 +16,61 @@
       "name": "brand_soft",
       "value": "#1F7A8F9C"
     },
-    { "name": "calculator_panel", "value": "#D2E4F3" },
-    { "name": "calculator_amoled", "value": "#000000" },
-    { "name": "calculator_key_digit", "value": "#EFEFEF" },
-    { "name": "calculator_key_op", "value": "#D2E4F3" },
-    { "name": "calculator_key_clear", "value": "#E3DCFB" },
-    { "name": "calculator_key_equals", "value": "#C2E7FB" },
-    { "name": "calculator_error", "value": "#F44B3F" },
-    { "name": "calculator_paypal", "value": "#003087" },
-    { "name": "calculator_bmac", "value": "#FFDD00" },
-    { "name": "calculator_github", "value": "#24292E" },
-    { "name": "calculator_heart", "value": "#EA4AAA" },
-    { "name": "calculator_white", "value": "#FFFFFF" },
-    { "name": "calculator_black", "value": "#1A1A1A" }
+    {
+      "name": "calculator_panel",
+      "value": "#D2E4F3"
+    },
+    {
+      "name": "calculator_amoled",
+      "value": "#000000"
+    },
+    {
+      "name": "calculator_key_digit",
+      "value": "#EFEFEF"
+    },
+    {
+      "name": "calculator_key_op",
+      "value": "#D2E4F3"
+    },
+    {
+      "name": "calculator_key_clear",
+      "value": "#E3DCFB"
+    },
+    {
+      "name": "calculator_key_equals",
+      "value": "#C2E7FB"
+    },
+    {
+      "name": "calculator_error",
+      "value": "#F44B3F"
+    },
+    {
+      "name": "calculator_paypal",
+      "value": "#003087"
+    },
+    {
+      "name": "calculator_bmac",
+      "value": "#FFDD00"
+    },
+    {
+      "name": "calculator_github",
+      "value": "#24292E"
+    },
+    {
+      "name": "calculator_heart",
+      "value": "#EA4AAA"
+    },
+    {
+      "name": "calculator_white",
+      "value": "#FFFFFF"
+    },
+    {
+      "name": "calculator_black",
+      "value": "#1A1A1A"
+    },
+    {
+      "name": "settings_header",
+      "value": "#1A6FB5"
+    }
   ]
 }
