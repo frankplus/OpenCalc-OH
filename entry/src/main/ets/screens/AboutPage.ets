@@ -1,21 +1,100 @@
-// Screen "About": Read about the app and open its links. An app bar with a back arrow (about_back_button) and the title "About" (about_back_button_text), then rows with a black icon on the left and the text, grouped under blue capital headers with thin separators between groups: "HELP US" (about_help): "Donate" (about_donate, does nothing, as in the original), "Translate" (about_translate), "Rate this app" (about_rate); "SOCIAL" (about_social): "GitHub" (about_github), "Discord" (about_discord); "APP INFO" (about_category_info): "License GPL 3.0" (about_license), "Privacy policy" (about_privacy_policy), "Version 3.2.0 (53)" (about_app_version; tapping it four times shows the toast "Thanks for using OpenCalc ❤️"); then the line "Made with ❤️ in France" (about_about_made_in_france). Translate opens https://hosted.weblate.org/engage/opencalc/, Rate this app https://play.google.com/store/apps/details?id=com.darkempire78.opencalculator, GitHub https://github.com/Darkempire78/OpenCalc, Discord https://discord.com/invite/sPvJmY7mcV, License https://github.com/Darkempire78/OpenCalc/blob/main/LICENSE, Privacy policy the gist URL in AboutActivity.kt, all in the system browser.
-// Keep the root id 'page_About', the pathStack consumer and this frame (Stack > Column > AppBar, then
-// the content): the factory's walker and the navigation host rely on them. Dialogs and a floating button go
-// last in the Stack. Push other screens with this.pathStack.pushPathByName(<name>, <string param>).
-import { AppColors } from '../theme/Theme';
+// Screen "About": links and app info of OpenCalc.
+import { AppColors, Size, Space, Type } from '../theme/Theme';
 import { AppBar } from '../kit/Kit';
+import { AboutRow } from '../components/about/AboutRow';
+import type { common, Want } from '@kit.AbilityKit';
+
+const URL_TRANSLATE: string = 'https://hosted.weblate.org/engage/opencalc/';
+const URL_RATE: string = 'https://play.google.com/store/apps/details?id=com.darkempire78.opencalculator';
+const URL_GITHUB: string = 'https://github.com/Darkempire78/OpenCalc';
+const URL_DISCORD: string = 'https://discord.com/invite/sPvJmY7mcV';
+const URL_LICENSE: string = 'https://github.com/Darkempire78/OpenCalc/blob/main/LICENSE';
+const URL_PRIVACY: string = 'https://gist.githubusercontent.com/clementwzk/1688314e8b75d5d32ac0503a97ec77a0/raw/2dcc4cf13f9755405e486e51e4658626c289986a/OpenCalc%2520Privacy%2520Policy.md';
 
 @ComponentV2
 export struct AboutPage {
   @Consumer('pathStack') pathStack: NavPathStack = new NavPathStack();
+  @Local versionTaps: number = 0;
+
+  private openUrl(url: string): void {
+    try {
+      const ctx = this.getUIContext().getHostContext() as common.UIAbilityContext;
+      const want: Want = {
+        action: 'ohos.want.action.viewData',
+        entities: ['entity.system.browsable'],
+        uri: url
+      };
+      ctx.startAbility(want).catch(() => {
+        // no browser available: nothing to do, as in the original
+      });
+    } catch (e) {
+      // starting the browser failed synchronously: ignored
+    }
+  }
+
+  private tapVersion(): void {
+    this.versionTaps++;
+    if (this.versionTaps >= 4) {
+      this.versionTaps = 0;
+      try {
+        this.getUIContext().getPromptAction().showToast({ message: $r('app.string.about_thanks_toast') });
+      } catch (e) {
+        this.versionTaps = 0;
+      }
+    }
+  }
+
+  @Builder
+  header(label: Resource, eid: string) {
+    Text(label)
+      .id(eid)
+      .width('100%')
+      .constraintSize({ minHeight: 24 })
+      .fontSize(Type.caption)
+      .fontColor(AppColors.brand)
+      .padding({ left: Space.l, right: Space.l, top: Space.m })
+  }
 
   build() {
     NavDestination() {
       Stack({ alignContent: Alignment.BottomEnd }) {
         Column() {
-          AppBar({ title: $r('app.string.title_About'), backId: 'about_back_button', onBack: () => { this.pathStack.pop(); } })
-          // TODO(factory): implement About
-          Text('TODO(factory): implement About')
+          AppBar({
+            title: $r('app.string.title_About'),
+            backId: 'about_back_button',
+            titleId: 'about_back_button_text',
+            onBack: () => { this.pathStack.pop(); }
+          })
+          Scroll() {
+            Column() {
+              this.header($r('app.string.about_help'), 'about_help')
+              AboutRow({ symbol: $r('sys.symbol.heart'), label: $r('app.string.about_donate'), eid: 'about_donate', onTap: () => {} })
+              AboutRow({ symbol: $r('sys.symbol.paperplane'), label: $r('app.string.about_translate'), eid: 'about_translate', onTap: () => { this.openUrl(URL_TRANSLATE); } })
+              AboutRow({ symbol: $r('sys.symbol.star'), label: $r('app.string.about_rate'), eid: 'about_rate', onTap: () => { this.openUrl(URL_RATE); } })
+              Divider().color(AppColors.divider)
+              this.header($r('app.string.about_social'), 'about_social')
+              AboutRow({ symbol: $r('sys.symbol.link'), label: $r('app.string.about_github'), eid: 'about_github', onTap: () => { this.openUrl(URL_GITHUB); } })
+              AboutRow({ symbol: $r('sys.symbol.message'), label: $r('app.string.about_discord'), eid: 'about_discord', onTap: () => { this.openUrl(URL_DISCORD); } })
+              Divider().color(AppColors.divider)
+              this.header($r('app.string.about_category_info'), 'about_category_info')
+              AboutRow({ symbol: $r('sys.symbol.doc_text'), label: $r('app.string.about_license'), eid: 'about_license', onTap: () => { this.openUrl(URL_LICENSE); } })
+              AboutRow({ symbol: $r('sys.symbol.lock'), label: $r('app.string.about_privacy_policy'), eid: 'about_privacy_policy', onTap: () => { this.openUrl(URL_PRIVACY); } })
+              AboutRow({ symbol: $r('sys.symbol.info_circle'), label: $r('app.string.about_app_version'), eid: 'about_app_version', onTap: () => { this.tapVersion(); } })
+              Divider().color(AppColors.divider)
+              Text($r('app.string.about_made_in_france'))
+                .id('about_about_made_in_france')
+                .width('100%')
+                .constraintSize({ minHeight: 24 })
+                .fontSize(Type.secondary)
+                .fontColor(AppColors.textSecondary)
+                .textAlign(TextAlign.Center)
+                .padding({ top: Space.l, bottom: Space.xl })
+            }
+            .width('100%')
+          }
+          .align(Alignment.Top)
+          .layoutWeight(1)
+          .width('100%')
         }
         .width('100%')
         .height('100%')
