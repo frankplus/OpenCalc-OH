@@ -17,6 +17,7 @@
       "value": "#338AB4F8"
     },
     { "name": "calculator_panel", "value": "#2A3944" },
+    { "name": "calculator_amoled", "value": "#000000" },
     { "name": "calculator_key_digit", "value": "#2B2B2B" },
     { "name": "calculator_key_op", "value": "#2A3944" },
     { "name": "calculator_key_clear", "value": "#3A3550" },
