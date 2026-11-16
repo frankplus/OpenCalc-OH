@@ -46,9 +46,19 @@ oniro-app app install    # installs it on the connected device or emulator
 oniro-app app launch
 ```
 
-The repository carries the OpenHarmony SDK's public development signing material (`signatures/`), so it builds signed as it is. That material is for development only: run `oniro-app sign` to generate your own.
+The repository carries no signing material. Before the first build, run `oniro-app sign --bootstrap` to generate development keys; it fills `signingConfigs` in `build-profile.json5` and writes the keys to `signatures/` (git-ignored). Keep that local change to `build-profile.json5` out of commits.
 
 The unit tests are under `entry/src/ohosTest`.
+
+## Releasing
+
+Releases go to the [Oniro App Store](https://store.iparo.app) from GitHub Actions ([`.github/workflows/oniro-store.yml`](.github/workflows/oniro-store.yml)). The shared [`oniro-app-store-actions`](https://github.com/eclipse-oniro4openharmony/oniro-app-store-actions) workflow builds the HAP from the tagged commit, attaches it to a GitHub release and registers it with the store, which marks it *Built from source*. No secrets are stored in the repository.
+
+1. Raise `versionCode` (and `versionName`) in `AppScope/app.json5`; the store accepts only a higher `versionCode` than the last published one.
+2. Commit and push to `main`.
+3. Tag and push: `git tag v1.0.1 && git push origin v1.0.1`.
+
+CI signs with the SDK's development key. The first release creates the store listing, owned by the GitHub account that pushed the tag, which must have signed in to the store once.
 
 ## How it was made
 
