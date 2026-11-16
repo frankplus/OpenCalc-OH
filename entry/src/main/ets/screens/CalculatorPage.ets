@@ -1,6 +1,7 @@
 import { AppColors, Radius, Size, Space, Type } from '../theme/Theme';
-import { IconButton, TextButton } from '../kit/Kit';
-import { CalcKey } from '../components/calculator/CalcKey';
+import { Keypad } from '../components/calculator/Keypad';
+import { HistoryPanel } from '../components/calculator/HistoryPanel';
+import { DonateDialog } from '../components/calculator/DonateDialog';
 import { CalculatorStore } from '../model/CalculatorStore';
 import { HistoryStore } from '../model/HistoryStore';
 import { SettingsStore } from '../model/SettingsStore';
@@ -33,13 +34,13 @@ export struct CalculatorPage {
   @Local panelOpen: boolean = false;
   @Local menuShown: boolean = false;
   @Local donateShown: boolean = false;
+  @Local padArea: number = 0;
   private caret: number = 0;
   private lastEquals: boolean = false;
   private numbering: number = 0;
   private seenSci: boolean = false;
   private seenRad: boolean = false;
   private ctrl: TextInputController = new TextInputController();
-  private scroller: Scroller = new Scroller();
   private calc: CalculatorStore = CalculatorStore.getInstance();
   private store: HistoryStore = HistoryStore.getInstance();
 
@@ -70,6 +71,22 @@ export struct CalculatorPage {
       return true;
     }
     return false;
+  }
+
+  // Height of a flat key (first row, scientific rows): smaller when the scientific rows are shown.
+  private flatH(): number {
+    return this.sci ? 40 : 48;
+  }
+
+  // Height of a main key: the 5 rows share what the flat rows and the padding leave of the keypad area.
+  private keyH(): number {
+    if (this.padArea <= 0) {
+      return 56;
+    }
+    const flatRows = this.sci ? 3 : 1;
+    const room = this.padArea - 2 * Space.s - flatRows * (this.flatH() + 8);
+    const h = Math.floor(room / 5) - 8;
+    return Math.max(Size.tap, Math.min(64, h));
   }
 
   private applySettings(): void {
@@ -298,13 +315,6 @@ export struct CalculatorPage {
     }
   }
 
-  private squareLabel(): string {
-    if (!this.inv) {
-      return '√';
-    }
-    return this.modulo ? '#' : 'x²';
-  }
-
   private openUrl(url: string): void {
     try {
       const ctx = this.getUIContext().getHostContext() as common.UIAbilityContext;
@@ -337,6 +347,17 @@ export struct CalculatorPage {
     this.insert(`(${text})`);
   }
 
+  private removeEntry(id: string): void {
+    this.store.remove(id).then(() => { this.loadHistory(); }).catch((e: Error) => {
+      hilog.error(0x0001, 'Calc', 'remove failed: %{public}s', JSON.stringify(e));
+      this.fail();
+    });
+  }
+
+  private fail(): void {
+    this.getUIContext().getPromptAction().showToast({ message: $r('app.string.calculator_failed') });
+  }
+
   @Builder
   emptyKeyboard() {
     Column().height(0)
@@ -362,14 +383,6 @@ export struct CalculatorPage {
   }
 
   @Builder
-  zeroMenu() {
-    Menu() {
-      MenuItem({ content: '00' }).onClick(() => { this.insert('00'); })
-      MenuItem({ content: '000' }).onClick(() => { this.insert('000'); })
-    }
-  }
-
-  @Builder
   display() {
     Column() {
       Row() {
@@ -391,11 +404,12 @@ export struct CalculatorPage {
         .height(Size.tap)
         .justifyContent(FlexAlign.Center)
         .alignItems(HorizontalAlign.Center)
+        .accessibilityText($r('app.string.calculator_more'))
         .onClick(() => { this.menuShown = true; })
         .bindMenu(this.menuShown, this.menu, { onDisappear: () => { this.menuShown = false; } })
       }
       .width('100%')
-      .padding({ top: Space.l })
+      .padding({ top: this.sci ? Space.s : Space.l })
       TextInput({ text: this.input, controller: this.ctrl })
         .id('input')
         .enableKeyboardOnFocus(false)
@@ -407,7 +421,7 @@ export struct CalculatorPage {
         .borderRadius(0)
         .padding(0)
         .width('100%')
-        .height(64)
+        .height(this.sci ? 56 : 64)
         .onChange((value: string) => {
           if (value !== this.input) {
             this.input = value;
@@ -439,230 +453,17 @@ export struct CalculatorPage {
         .width('100%')
         .height(Size.tap)
         .justifyContent(FlexAlign.Center)
+        .accessibilityText($r('app.string.calculator_history_handle'))
         .onClick(() => { this.panelOpen = !this.panelOpen; })
       } else {
         Column().height(Size.tap)
       }
     }
     .width('100%')
-    .height(240)
+    .height(this.sci ? 200 : 240)
     .padding({ left: Space.l, right: Space.l })
     .backgroundColor(this.amoled ? $r('app.color.calculator_amoled') : $r('app.color.calculator_panel'))
     .borderRadius({ bottomLeft: Radius.l * 2, bottomRight: Radius.l * 2 })
-  }
-
-  @Builder
-  sciRows() {
-    Row() {
-      CalcKey({ label: this.rad ? 'DEG' : 'RAD', eid: 'degreeButton', kind: 4, keyHeight: 48, onTap: () => { this.onKey('degreeButton'); } })
-      CalcKey({ label: this.inv ? 'sin⁻¹' : 'sin', eid: 'sineButton', kind: 4, keyHeight: 48, onTap: () => { this.onKey('sineButton'); } })
-      CalcKey({ label: this.inv ? 'cos⁻¹' : 'cos', eid: 'cosineButton', kind: 4, keyHeight: 48, onTap: () => { this.onKey('cosineButton'); } })
-      CalcKey({ label: this.inv ? 'tan⁻¹' : 'tan', eid: 'tangentButton', kind: 4, keyHeight: 48, onTap: () => { this.onKey('tangentButton'); } })
-    }
-    Row() {
-      CalcKey({ label: $r('app.string.calculator_inv'), eid: 'invButton', kind: 4, keyHeight: 48, onTap: () => { this.onKey('invButton'); } })
-      CalcKey({ label: 'e', eid: 'eButton', kind: 4, keyHeight: 48, onTap: () => { this.onKey('eButton'); } })
-      CalcKey({ label: this.inv ? 'e^' : 'ln', eid: 'naturalLogarithmButton', kind: 4, keyHeight: 48, onTap: () => { this.onKey('naturalLogarithmButton'); } })
-      CalcKey({ label: this.inv ? '10^' : 'log', eid: 'logarithmButton', kind: 4, keyHeight: 48, onTap: () => { this.onKey('logarithmButton'); } })
-      CalcKey({ label: this.inv ? '2^' : 'log₂', eid: 'log2Button', kind: 4, keyHeight: 48, onTap: () => { this.onKey('log2Button'); } })
-    }
-  }
-
-  @Builder
-  keypad() {
-    Column() {
-      Row() {
-        CalcKey({ label: this.squareLabel(), eid: 'squareButton', kind: 4, keyHeight: 48, onTap: () => { this.onKey('squareButton'); } })
-        CalcKey({ label: 'π', eid: 'piButton', kind: 4, keyHeight: 48, onTap: () => { this.onKey('piButton'); } })
-        CalcKey({ label: '^', eid: 'exponentButton', kind: 4, keyHeight: 48, onTap: () => { this.onKey('exponentButton'); } })
-        CalcKey({ label: '!', eid: 'factorialButton', kind: 4, keyHeight: 48, onTap: () => { this.onKey('factorialButton'); } })
-        CalcKey({
-          symbol: this.sci ? $r('sys.symbol.chevron_up') : $r('sys.symbol.chevron_down'), eid: 'scientistModeSwitchButton',
-          kind: 1, keyHeight: 48, onTap: () => { this.onKey('scientistModeSwitchButton'); }
-        })
-      }
-      if (this.sci) {
-        this.sciRows()
-      }
-      Row() {
-        if (this.split) {
-          CalcKey({ label: '(', eid: 'leftParenthesisButton', kind: 1, onTap: () => { this.onKey('leftParenthesisButton'); } })
-          CalcKey({ label: ')', eid: 'rightParenthesisButton', kind: 1, onTap: () => { this.onKey('rightParenthesisButton'); } })
-        } else {
-          CalcKey({ label: $r('app.string.calculator_ac'), eid: 'clearButton', kind: 2, onTap: () => { this.onKey('clearButton'); } })
-          CalcKey({ label: '( )', eid: 'parenthesesButton', kind: 1, onTap: () => { this.onKey('parenthesesButton'); } })
-        }
-        CalcKey({ label: '%', eid: 'divideBy100Button', kind: 1, onTap: () => { this.onKey('divideBy100Button'); } })
-        CalcKey({ label: '÷', eid: 'divideButton', kind: 1, onTap: () => { this.onKey('divideButton'); } })
-      }
-      Row() {
-        CalcKey({ label: '7', eid: 'sevenButton', onTap: () => { this.onKey('sevenButton'); } })
-        CalcKey({ label: '8', eid: 'eightButton', onTap: () => { this.onKey('eightButton'); } })
-        CalcKey({ label: '9', eid: 'nineButton', onTap: () => { this.onKey('nineButton'); } })
-        CalcKey({ label: '×', eid: 'multiplyButton', kind: 1, onTap: () => { this.onKey('multiplyButton'); } })
-      }
-      Row() {
-        CalcKey({ label: '4', eid: 'fourButton', onTap: () => { this.onKey('fourButton'); } })
-        CalcKey({ label: '5', eid: 'fiveButton', onTap: () => { this.onKey('fiveButton'); } })
-        CalcKey({ label: '6', eid: 'sixButton', onTap: () => { this.onKey('sixButton'); } })
-        CalcKey({ label: '−', eid: 'subtractButton', kind: 1, onTap: () => { this.onKey('subtractButton'); } })
-      }
-      Row() {
-        CalcKey({ label: '1', eid: 'oneButton', onTap: () => { this.onKey('oneButton'); } })
-        CalcKey({ label: '2', eid: 'twoButton', onTap: () => { this.onKey('twoButton'); } })
-        CalcKey({ label: '3', eid: 'threeButton', onTap: () => { this.onKey('threeButton'); } })
-        CalcKey({ label: '+', eid: 'addButton', kind: 1, onTap: () => { this.onKey('addButton'); } })
-      }
-      Row() {
-        CalcKey({
-          label: '0', eid: 'zeroButton', zeroMenu: true,
-          onTap: () => { this.onKey('zeroButton'); },
-          onInsert: (v: string) => { this.insert(v); }
-        })
-        CalcKey({ label: '.', eid: 'pointButton', onTap: () => { this.onKey('pointButton'); } })
-        CalcKey({
-          label: '⌫', eid: 'backspaceButton',
-          onTap: () => { this.onKey('backspaceButton'); },
-          onLong: () => { this.buzz(); this.clearAll(); }
-        })
-        CalcKey({ label: '=', eid: 'equalsButton', kind: 3, onTap: () => { this.onKey('equalsButton'); } })
-      }
-    }
-    .width('100%')
-    .padding({ left: Space.s, right: Space.s, top: Space.s, bottom: Space.s })
-    .justifyContent(FlexAlign.End)
-    .layoutWeight(1)
-  }
-
-  @Builder
-  historyPanel() {
-    Column() {
-      if (this.history.length === 0) {
-        Text($r('app.string.calculator_no_history'))
-          .id('no_history_text')
-          .fontSize(Type.body)
-          .fontColor(AppColors.textSecondary)
-          .width('100%')
-          .textAlign(TextAlign.Center)
-          .constraintSize({ minHeight: 24 })
-          .margin({ top: Space.xxl })
-      } else {
-        List({ scroller: this.scroller, initialIndex: Math.max(0, this.history.length - 1) }) {
-          Repeat<History>(this.history).each((ri: RepeatItem<History>) => {
-            ListItem() {
-              Column() {
-                if (ri.index === 0 || !this.store.sameDay(this.history[ri.index - 1], ri.item)) {
-                  Text(this.store.dateLabel(ri.item.time))
-                    .id('history_time')
-                    .fontSize(Type.caption)
-                    .fontColor(AppColors.textSecondary)
-                    .width('100%')
-                    .textAlign(TextAlign.End)
-                    .constraintSize({ minHeight: 24 })
-                }
-                Text(ri.item.calculation)
-                  .id('history_item_calculation')
-                  .fontSize(Type.secondary)
-                  .fontColor(AppColors.textSecondary)
-                  .width('100%')
-                  .textAlign(TextAlign.End)
-                  .constraintSize({ minHeight: 24 })
-                  .onClick(() => { this.pick(ri.item.calculation); })
-                  .gesture(LongPressGesture().onAction(() => { this.copyText(ri.item.calculation); }))
-                Text(ri.item.result)
-                  .id('history_item_result')
-                  .fontSize(Type.title)
-                  .fontColor(AppColors.textPrimary)
-                  .width('100%')
-                  .textAlign(TextAlign.End)
-                  .constraintSize({ minHeight: 32 })
-                  .onClick(() => { this.pick(ri.item.result); })
-                  .gesture(LongPressGesture().onAction(() => { this.copyText(ri.item.result); }))
-              }
-              .id(`history_item_${ri.index}`)
-              .padding({ left: Space.l, right: Space.l, top: Space.s, bottom: Space.s })
-            }
-            .swipeAction({
-              end: this.swipeDelete ? {
-                builder: () => { this.deleteSwipe(); },
-                onAction: () => { this.removeEntry(ri.item.id); }
-              } : undefined
-            })
-          }).key((item: History) => `${item.id}_${item.calculation}_${item.result}`).virtualScroll()
-        }
-        .id('history_recylcle_view')
-        .layoutWeight(1)
-        .width('100%')
-      }
-    }
-    .width('100%')
-    .height('100%')
-    .backgroundColor(AppColors.background)
-  }
-
-  @Builder
-  deleteSwipe() {
-    Column().width(1).height(1)
-  }
-
-  private removeEntry(id: string): void {
-    this.store.remove(id).then(() => { this.loadHistory(); }).catch((e: Error) => {
-      hilog.error(0x0001, 'Calc', 'remove failed: %{public}s', JSON.stringify(e));
-      this.fail();
-    });
-  }
-
-  private fail(): void {
-    this.getUIContext().getPromptAction().showToast({ message: $r('app.string.calculator_failed') });
-  }
-
-  @Builder
-  donateButton(label: Resource, id: string, bg: Resource, fg: Resource, url: string) {
-    Row() {
-      Text(label)
-        .fontSize(Type.body)
-        .fontColor(fg)
-        .maxLines(1)
-    }
-    .id(id)
-    .width('100%')
-    .height(Size.button)
-    .justifyContent(FlexAlign.Center)
-    .backgroundColor(bg)
-    .borderRadius(Radius.m)
-    .onClick(() => { this.openUrl(url); })
-  }
-
-  @Builder
-  donateDialog() {
-    Column() {
-      Column({ space: Space.m }) {
-        Text($r('app.string.calculator_support_us'))
-          .id('alertTitle')
-          .fontSize(Type.subtitle)
-          .fontColor(AppColors.textPrimary)
-          .constraintSize({ minHeight: 24 })
-        this.donateButton($r('app.string.calculator_paypal'), 'paypalImage', $r('app.color.calculator_paypal'),
-          $r('app.color.calculator_white'), 'https://www.paypal.me/ImDarkempire')
-        this.donateButton($r('app.string.calculator_bmac'), 'bmacImage', $r('app.color.calculator_bmac'),
-          $r('app.color.calculator_black'), 'https://www.buymeacoffee.com/darkempire78')
-        this.donateButton($r('app.string.calculator_github'), 'githubImage', $r('app.color.calculator_github'),
-          $r('app.color.calculator_white'), 'https://github.com/sponsors/Darkempire78')
-        Row() {
-          Blank()
-          TextButton({ label: $r('app.string.calculator_close'), eid: 'button1', onTap: () => { this.donateShown = false; } })
-        }.width('100%')
-      }
-      .width('86%')
-      .padding(Space.l)
-      .backgroundColor(AppColors.surface)
-      .borderRadius(Radius.l)
-    }
-    .width('100%')
-    .height('100%')
-    .justifyContent(FlexAlign.Center)
-    .backgroundColor(AppColors.scrim)
-    .onClick(() => { this.donateShown = false; })
   }
 
   build() {
@@ -670,18 +471,34 @@ export struct CalculatorPage {
       Column() {
         this.display()
         Stack({ alignContent: Alignment.TopStart }) {
-          this.keypad()
+          Keypad({
+            sci: this.sci, inv: this.inv, rad: this.rad, split: this.split, modulo: this.modulo,
+            keyH: this.keyH(), flatH: this.flatH(),
+            onKey: (id: string) => { this.onKey(id); },
+            onInsert: (v: string) => { this.insert(v); },
+            onClearAll: () => { this.buzz(); this.clearAll(); }
+          })
           if (this.panelOpen) {
-            this.historyPanel()
+            HistoryPanel({
+              history: this.history, swipeDelete: this.swipeDelete,
+              onPick: (t: string) => { this.pick(t); },
+              onCopy: (t: string) => { this.copyText(t); },
+              onRemove: (id: string) => { this.removeEntry(id); }
+            })
           }
         }
         .layoutWeight(1)
         .width('100%')
+        .clip(true)
+        .onAreaChange((oldArea: Area, newArea: Area) => { this.padArea = Number(newArea.height); })
       }
       .width('100%')
       .height('100%')
       if (this.donateShown) {
-        this.donateDialog()
+        DonateDialog({
+          onOpen: (url: string) => { this.openUrl(url); },
+          onClose: () => { this.donateShown = false; }
+        })
       }
     }
     .width('100%')
