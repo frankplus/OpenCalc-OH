@@ -39,6 +39,17 @@
     {
       "name": "permission_reason_vibrate",
       "value": "Vibrate briefly when a calculator button is pressed (can be turned off in Settings)."
-    }
+    },
+    { "name": "calculator_clear_history", "value": "Clear History" },
+    { "name": "calculator_support_us", "value": "Support Us" },
+    { "name": "calculator_no_history", "value": "No History Available" },
+    { "name": "calculator_close", "value": "Close" },
+    { "name": "calculator_paypal", "value": "Donate on PayPal" },
+    { "name": "calculator_bmac", "value": "Buy me a coffee" },
+    { "name": "calculator_github", "value": "GitHub Sponsor" },
+    { "name": "calculator_failed", "value": "Could not update the history" },
+    { "name": "calculator_copied", "value": "Copied" },
+    { "name": "calculator_more", "value": "More options" },
+    { "name": "calculator_history_handle", "value": "History" }
   ]
 }
