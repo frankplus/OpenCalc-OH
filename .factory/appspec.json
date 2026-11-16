@@ -1,0 +1,1851 @@
+{
+  "name": "OpenCalc",
+  "bundle": "com.oniro.factory.opencalc",
+  "label": "Calculator",
+  "summary": "Port of OpenCalc (com.darkempire78.opencalculator 3.2.x): a calculator with a live result line, an optional scientific keypad (DEG/RAD, INV, trigonometry, logarithms, modulo), a sliding history panel saved across restarts, an overflow menu (Clear History, Settings, About, Support Us), a Settings page of switches and pickers (theme, numbering system, precision, history size) and an About page.",
+  "design": {
+    "brand": "#B4D2E4",
+    "brandDark": "#8AB4F8",
+    "navigation": "The calculator keypad is the home screen with no app bar; an overflow (three dots) icon in its display area opens a popup menu whose Settings and About items push those pages on a Navigation stack, each with an app bar holding a back arrow and its title; Clear History and Support Us act on the home screen itself; the history is a panel that slides down over the keypad from the display area.",
+    "tone": "The original's English texts word for word (\"Clear History\", \"Support Us\", \"Can't divide by 0\"), short, no exclamation marks; settings rows have a title and a one-line description; category headers in capitals (GENERAL, FORMATTING)."
+  },
+  "screens": [
+    {
+      "name": "Calculator",
+      "title": "Calculator",
+      "purpose": "Type a calculation on the keypad and read the live result; no app bar. The display panel shows the overflow icon (menuButton, three vertical dots, top right) that opens a popup menu with the items \"Clear History\" (app_menu_clear_history_button), \"Settings\" (app_menu_settings_button), \"About\" (app_menu_about_button) and \"Support Us\" (app_menu_donate_button); the input line (input, large black text, right-aligned) and the result line (resultDisplay, grey, right-aligned, red #F44B3F with the input on an error after =). Below, a first row of flat text keys without background: √ (squareButton), π (piButton), ^ (exponentButton), ! (factorialButton) and a round pale-blue key with a chevron down/up (scientistModeSwitchButton) that shows or hides two more flat rows: RAD/DEG (degreeButton), sin (sineButton), cos (cosineButton), tan (tangentButton), then INV (invButton), e (eButton), ln (naturalLogarithmButton), log (logarithmButton), log₂ (log2Button), and the DEG/RAD indicator (degreeTextView, grey, top left of the display) appears. Then 5 rows of 4 round keys (they become pill-shaped when the scientific rows are shown): AC (clearButton, pale lavender #E3DCFB), ( ) (parenthesesButton), % (divideBy100Button), ÷ (divideButton); 7 8 9 × (multiplyButton); 4 5 6 − (subtractButton); 1 2 3 + (addButton); 0 (zeroButton) · (pointButton) ⌫ (backspaceButton) = (equalsButton, light blue #C2E7FB); digit keys light grey #EFEFEF, operator keys and ( ) % pale blue #D2E4F3. With Split parentheses on, AC and ( ) are replaced by ( (leftParenthesisButton) and ) (rightParenthesisButton). INV switches the labels to sin⁻¹ cos⁻¹ tan⁻¹ e^ 10^ 2^ and √ to # (modulo, when Add a modulo button is on) or x². Long press on 0 offers 00 and 000; long press on ⌫ clears everything. The history handle (history_sliding_layout_button) slides the history panel down over the keypad: a list (history_recylcle_view) of rows (history_item_0, history_item_1, …), oldest first and scrolled to the newest at the bottom, each with the calculation (history_item_calculation), the result (history_item_result) and a relative day (history_time, shown only on the first row of each day); tapping a calculation or result inserts it wrapped in parentheses; swiping a row sideways deletes it when allowed; tapping the handle again or Back closes the panel. The Support Us dialog has the title \"Support Us\" (alertTitle), three wide rounded buttons drawn like the original's images: dark blue \"Donate on PayPal\" (paypalImage), yellow \"Buy me a coffee\" (bmacImage), charcoal \"GitHub Sponsor\" with a pink heart (githubImage), and a text button \"Close\" (button1).",
+      "home": true,
+      "mustShow": [
+        "id=menuButton",
+        "id=input",
+        "id=resultDisplay",
+        "id=history_sliding_layout_button",
+        "id=squareButton",
+        "id=piButton",
+        "id=exponentButton",
+        "id=factorialButton",
+        "id=scientistModeSwitchButton",
+        "id=clearButton",
+        "id=parenthesesButton",
+        "id=divideBy100Button",
+        "id=divideButton",
+        "id=sevenButton",
+        "id=eightButton",
+        "id=nineButton",
+        "id=multiplyButton",
+        "id=fourButton",
+        "id=fiveButton",
+        "id=sixButton",
+        "id=subtractButton",
+        "id=oneButton",
+        "id=twoButton",
+        "id=threeButton",
+        "id=addButton",
+        "id=zeroButton",
+        "id=pointButton",
+        "id=backspaceButton",
+        "id=equalsButton"
+      ],
+      "ux": {
+        "primaryAction": "compute: the = key (equalsButton) replaces the input with the result and saves the calculation to the history; the result line already shows the result while typing",
+        "empty": "the history panel with no saved calculation shows the centred text \"No History Available\" (id no_history_text) in place of the list",
+        "error": "after = on an invalid calculation the result line shows \"Syntax error\", \"Domain error\", \"Real number required\" or \"Can't divide by 0\" and the input and result turn red #F44B3F until the input changes; a result too large shows \"Value too large\" (or \"-Infinity\") without the red colour; while typing an invalid calculation the result line is simply empty",
+        "confirm": []
+      },
+      "source": {
+        "component": "MainActivity",
+        "files": [
+          "app/src/main/java/com/darkempire78/opencalculator/activities/MainActivity.kt",
+          "app/src/main/res/layout/activity_main.xml",
+          "app/src/main/res/layout/history_item.xml",
+          "app/src/main/res/menu/app_menu.xml",
+          "app/src/main/res/menu/popup_menu_zero.xml",
+          "app/src/main/java/com/darkempire78/opencalculator/history/HistoryAdapter.kt",
+          "app/src/main/java/com/darkempire78/opencalculator/dialogs/DonationDialog.kt",
+          "app/src/main/res/layout/dialog_donation.xml",
+          "app/src/main/java/com/darkempire78/opencalculator/TextSizeAdjuster.kt"
+        ],
+        "states": [
+          "s01",
+          "s04",
+          "s03",
+          "s09",
+          "s08",
+          "s02",
+          "s07"
+        ]
+      }
+    },
+    {
+      "name": "Settings",
+      "title": "Settings",
+      "purpose": "Change how the calculator behaves; every change is saved at once. An app bar with a back arrow (settings_back_button) and the title \"Settings\" (settings_back_button_text), then a scrolling list (not lazy) of rows with an icon on the left, a title and a grey description, a switch on the right for the on/off ones, and blue capital category headers. GENERAL: \"Language\" with the system language name as summary (settings_language, summary settings_language_summary, e.g. \"English\"; display only); \"Theme\" (settings_theme, summary settings_theme_summary) opens a single-choice dialog \"System (Material You)\", \"Light\", \"Dark\", \"Amoled\"; \"Numbering System\" (settings_numbering_system, summary settings_numbering_system_summary) opens a single-choice dialog \"International Numbering System\", \"Indian Numbering System\"; \"Vibration\" / \"Vibrate when a button is pressed\" (settings_vibration_switch, on); \"Radians\" / \"Use radians instead of degrees by default\" (settings_radians_switch, off); \"Scientific mode\" / \"Activate scientific mode by default\" (settings_scientific_mode_switch, off); \"Split the parentheses button into two buttons\" / \"Remove the \\\"AC\\\" button to split the parentheses button into two buttons\" (settings_split_parenthesis_switch, off); \"Add a modulo button\" / \"Replace the \\\"X²\\\" button with a modulo button (available when the \\\"INV\\\" button is pressed)\" (settings_modulo_switch, on). FORMATTING: \"Number of decimal places\" with the value as summary (settings_precision, default 10) opens a single-choice dialog 0 to 20, 25, 30, 40, 50, 75, 100, ∞; \"Number into scientific notation\" / \"Convert all results to scientific notation\" (settings_scientific_notation_switch, off). HISTORY: \"Results saved in history\" with the value as summary (settings_history_size, default 50) opens a single-choice dialog 0, 10, 20, 50, 100, 200, 500, 1000, ∞; \"Allow selective history deletion\" / \"Delete specific history element on swipe\" (settings_delete_on_swipe_switch, on); \"Automatically save calculations\" / \"Automatically save calculations in history without needing to click the equal button\" (settings_auto_save_switch, on). ADVANCED: \"Long press to copy value\" / \"Long press copies the text of the item instead of selecting it\" (settings_long_click_copy_switch, on); \"Keep device awake\" / \"Prevent device from sleeping while the app is in the foreground\" (settings_prevent_sleep_switch, off). A picked dialog option closes the dialog and updates the row summary at once.",
+      "mustShow": [
+        "id=settings_back_button",
+        "id=settings_language",
+        "id=settings_theme",
+        "id=settings_theme_summary",
+        "id=settings_numbering_system",
+        "id=settings_numbering_system_summary",
+        "id=settings_vibration_switch",
+        "id=settings_radians_switch",
+        "id=settings_scientific_mode_switch",
+        "id=settings_split_parenthesis_switch",
+        "id=settings_modulo_switch"
+      ],
+      "ux": {
+        "primaryAction": "none: each switch saves when toggled and each picker row opens its single-choice dialog",
+        "confirm": []
+      },
+      "source": {
+        "component": "SettingsActivity",
+        "files": [
+          "app/src/main/java/com/darkempire78/opencalculator/activities/SettingsActivity.kt",
+          "app/src/main/res/layout/settings_activity.xml",
+          "app/src/main/res/xml/root_preferences.xml",
+          "app/src/main/java/com/darkempire78/opencalculator/MyPreferences.kt",
+          "app/src/main/java/com/darkempire78/opencalculator/Themes.kt",
+          "app/src/main/res/values/arrays.xml"
+        ],
+        "states": [
+          "s05",
+          "s11",
+          "s12"
+        ]
+      }
+    },
+    {
+      "name": "About",
+      "title": "About",
+      "purpose": "Read about the app and open its links. An app bar with a back arrow (about_back_button) and the title \"About\" (about_back_button_text), then rows with a black icon on the left and the text, grouped under blue capital headers with thin separators between groups: \"HELP US\" (about_help): \"Donate\" (about_donate, does nothing, as in the original), \"Translate\" (about_translate), \"Rate this app\" (about_rate); \"SOCIAL\" (about_social): \"GitHub\" (about_github), \"Discord\" (about_discord); \"APP INFO\" (about_category_info): \"License GPL 3.0\" (about_license), \"Privacy policy\" (about_privacy_policy), \"Version 3.2.0 (53)\" (about_app_version; tapping it four times shows the toast \"Thanks for using OpenCalc ❤️\"); then the line \"Made with ❤️ in France\" (about_about_made_in_france). Translate opens https://hosted.weblate.org/engage/opencalc/, Rate this app https://play.google.com/store/apps/details?id=com.darkempire78.opencalculator, GitHub https://github.com/Darkempire78/OpenCalc, Discord https://discord.com/invite/sPvJmY7mcV, License https://github.com/Darkempire78/OpenCalc/blob/main/LICENSE, Privacy policy the gist URL in AboutActivity.kt, all in the system browser.",
+      "mustShow": [
+        "id=about_back_button",
+        "id=about_help",
+        "id=about_donate",
+        "id=about_translate",
+        "id=about_rate",
+        "id=about_social",
+        "id=about_github",
+        "id=about_discord",
+        "id=about_category_info",
+        "id=about_license",
+        "id=about_privacy_policy",
+        "id=about_app_version",
+        "id=about_about_made_in_france"
+      ],
+      "ux": {
+        "confirm": []
+      },
+      "source": {
+        "component": "AboutActivity",
+        "files": [
+          "app/src/main/java/com/darkempire78/opencalculator/activities/AboutActivity.kt",
+          "app/src/main/res/layout/activity_about.xml"
+        ],
+        "states": [
+          "s06"
+        ]
+      }
+    }
+  ],
+  "routes": [
+    {
+      "from": "Calculator",
+      "to": "Settings",
+      "trigger": "id=app_menu_settings_button",
+      "setup": [
+        {
+          "action": "click",
+          "selector": "id=menuButton",
+          "expect": "id=app_menu_settings_button"
+        }
+      ]
+    },
+    {
+      "from": "Calculator",
+      "to": "About",
+      "trigger": "id=app_menu_about_button",
+      "setup": [
+        {
+          "action": "click",
+          "selector": "id=menuButton",
+          "expect": "id=app_menu_about_button"
+        }
+      ]
+    },
+    {
+      "from": "Settings",
+      "to": "Calculator",
+      "trigger": "id=settings_back_button"
+    },
+    {
+      "from": "About",
+      "to": "Calculator",
+      "trigger": "id=about_back_button"
+    }
+  ],
+  "entities": [
+    {
+      "name": "History",
+      "fields": [
+        {
+          "name": "id",
+          "type": "string"
+        },
+        {
+          "name": "calculation",
+          "type": "string"
+        },
+        {
+          "name": "result",
+          "type": "string"
+        },
+        {
+          "name": "time",
+          "type": "string"
+        }
+      ],
+      "persistence": "preferences"
+    },
+    {
+      "name": "CalcSettings",
+      "fields": [
+        {
+          "name": "themeStyle",
+          "type": "number",
+          "default": 0
+        },
+        {
+          "name": "vibrationMode",
+          "type": "boolean",
+          "default": true
+        },
+        {
+          "name": "useRadiansByDefault",
+          "type": "boolean",
+          "default": false
+        },
+        {
+          "name": "scientificModeByDefault",
+          "type": "boolean",
+          "default": false
+        },
+        {
+          "name": "splitParenthesisButton",
+          "type": "boolean",
+          "default": false
+        },
+        {
+          "name": "addModuloButton",
+          "type": "boolean",
+          "default": true
+        },
+        {
+          "name": "numberPrecision",
+          "type": "number",
+          "default": 10
+        },
+        {
+          "name": "numberIntoScientificNotation",
+          "type": "boolean",
+          "default": false
+        },
+        {
+          "name": "historySize",
+          "type": "number",
+          "default": 50
+        },
+        {
+          "name": "deleteHistoryOnSwipe",
+          "type": "boolean",
+          "default": true
+        },
+        {
+          "name": "autoSaveCalculationWithoutEqualButton",
+          "type": "boolean",
+          "default": true
+        },
+        {
+          "name": "longClickToCopyValue",
+          "type": "boolean",
+          "default": true
+        },
+        {
+          "name": "preventPhoneFromSleepingMode",
+          "type": "boolean",
+          "default": false
+        },
+        {
+          "name": "numberingSystem",
+          "type": "number",
+          "default": 0
+        }
+      ],
+      "persistence": "preferences"
+    },
+    {
+      "name": "CalcResult",
+      "fields": [
+        {
+          "name": "ok",
+          "type": "boolean",
+          "default": true
+        },
+        {
+          "name": "value",
+          "type": "string",
+          "default": ""
+        },
+        {
+          "name": "error",
+          "type": "string",
+          "default": ""
+        }
+      ],
+      "persistence": "memory"
+    },
+    {
+      "name": "InputEdit",
+      "fields": [
+        {
+          "name": "text",
+          "type": "string",
+          "default": ""
+        },
+        {
+          "name": "caret",
+          "type": "number",
+          "default": 0
+        }
+      ],
+      "persistence": "memory"
+    }
+  ],
+  "fPoints": [
+    {
+      "id": "F1",
+      "screen": "Calculator",
+      "description": "Addition: the result line shows the live result, = moves it into the input (12+7 = 19)",
+      "steps": [
+        {
+          "action": "click",
+          "selector": "id=oneButton"
+        },
+        {
+          "action": "click",
+          "selector": "id=twoButton"
+        },
+        {
+          "action": "click",
+          "selector": "id=addButton"
+        },
+        {
+          "action": "click",
+          "selector": "id=sevenButton",
+          "expect": "id=input,text=12+7"
+        },
+        {
+          "action": "wait",
+          "selector": "id=resultDisplay,text=19"
+        },
+        {
+          "action": "click",
+          "selector": "id=equalsButton",
+          "expect": "id=input,text=19",
+          "waitMs": 500
+        }
+      ]
+    },
+    {
+      "id": "F2",
+      "screen": "Calculator",
+      "description": "Division rounded to 10 decimal places: 7÷3 shows 2.3333333333",
+      "steps": [
+        {
+          "action": "click",
+          "selector": "id=sevenButton"
+        },
+        {
+          "action": "click",
+          "selector": "id=divideButton"
+        },
+        {
+          "action": "click",
+          "selector": "id=threeButton",
+          "expect": "id=input,text=7÷3"
+        },
+        {
+          "action": "wait",
+          "selector": "id=resultDisplay,text=2.3333333333"
+        }
+      ]
+    },
+    {
+      "id": "F3",
+      "screen": "Calculator",
+      "description": "Division by zero: after = the result line shows the error text",
+      "steps": [
+        {
+          "action": "click",
+          "selector": "id=oneButton"
+        },
+        {
+          "action": "click",
+          "selector": "id=divideButton"
+        },
+        {
+          "action": "click",
+          "selector": "id=zeroButton"
+        },
+        {
+          "action": "click",
+          "selector": "id=equalsButton",
+          "waitMs": 500
+        },
+        {
+          "action": "wait",
+          "selector": "id=resultDisplay,text*=divide by 0"
+        }
+      ]
+    },
+    {
+      "id": "F4",
+      "screen": "Calculator",
+      "description": "Grouping separators in the input and the result: 1,234×5 = 6,170",
+      "steps": [
+        {
+          "action": "click",
+          "selector": "id=oneButton"
+        },
+        {
+          "action": "click",
+          "selector": "id=twoButton"
+        },
+        {
+          "action": "click",
+          "selector": "id=threeButton"
+        },
+        {
+          "action": "click",
+          "selector": "id=fourButton"
+        },
+        {
+          "action": "click",
+          "selector": "id=multiplyButton"
+        },
+        {
+          "action": "click",
+          "selector": "id=fiveButton",
+          "expect": "id=input,text=\"1,234×5\""
+        },
+        {
+          "action": "wait",
+          "selector": "id=resultDisplay,text=\"6,170\""
+        }
+      ]
+    },
+    {
+      "id": "F5",
+      "screen": "Calculator",
+      "description": "Exponent key: 2^10 shows 1,024",
+      "steps": [
+        {
+          "action": "click",
+          "selector": "id=twoButton"
+        },
+        {
+          "action": "click",
+          "selector": "id=exponentButton"
+        },
+        {
+          "action": "click",
+          "selector": "id=oneButton"
+        },
+        {
+          "action": "click",
+          "selector": "id=zeroButton",
+          "expect": "id=input,text=2^10"
+        },
+        {
+          "action": "wait",
+          "selector": "id=resultDisplay,text=\"1,024\""
+        }
+      ]
+    },
+    {
+      "id": "F6",
+      "screen": "Calculator",
+      "description": "Percent relative to the base: 200+10% shows 220",
+      "steps": [
+        {
+          "action": "click",
+          "selector": "id=twoButton"
+        },
+        {
+          "action": "click",
+          "selector": "id=zeroButton"
+        },
+        {
+          "action": "click",
+          "selector": "id=zeroButton"
+        },
+        {
+          "action": "click",
+          "selector": "id=addButton"
+        },
+        {
+          "action": "click",
+          "selector": "id=oneButton"
+        },
+        {
+          "action": "click",
+          "selector": "id=zeroButton"
+        },
+        {
+          "action": "click",
+          "selector": "id=divideBy100Button",
+          "expect": "id=input,text=200+10%"
+        },
+        {
+          "action": "wait",
+          "selector": "id=resultDisplay,text=220"
+        }
+      ]
+    },
+    {
+      "id": "F7",
+      "screen": "Calculator",
+      "description": "Factorial: 5! shows 120",
+      "steps": [
+        {
+          "action": "click",
+          "selector": "id=fiveButton"
+        },
+        {
+          "action": "click",
+          "selector": "id=factorialButton",
+          "expect": "id=input,text=5!"
+        },
+        {
+          "action": "wait",
+          "selector": "id=resultDisplay,text=120"
+        }
+      ]
+    },
+    {
+      "id": "F8",
+      "screen": "Calculator",
+      "description": "The parentheses key opens then closes: (2+3)×4 shows 20",
+      "steps": [
+        {
+          "action": "click",
+          "selector": "id=parenthesesButton"
+        },
+        {
+          "action": "click",
+          "selector": "id=twoButton"
+        },
+        {
+          "action": "click",
+          "selector": "id=addButton"
+        },
+        {
+          "action": "click",
+          "selector": "id=threeButton"
+        },
+        {
+          "action": "click",
+          "selector": "id=parenthesesButton"
+        },
+        {
+          "action": "click",
+          "selector": "id=multiplyButton"
+        },
+        {
+          "action": "click",
+          "selector": "id=fourButton",
+          "expect": "id=input,text=\"(2+3)×4\""
+        },
+        {
+          "action": "wait",
+          "selector": "id=resultDisplay,text=20"
+        }
+      ]
+    },
+    {
+      "id": "F9",
+      "screen": "Calculator",
+      "description": "Backspace removes the last character and AC clears the input",
+      "steps": [
+        {
+          "action": "click",
+          "selector": "id=oneButton"
+        },
+        {
+          "action": "click",
+          "selector": "id=twoButton"
+        },
+        {
+          "action": "click",
+          "selector": "id=threeButton",
+          "expect": "id=input,text=123"
+        },
+        {
+          "action": "click",
+          "selector": "id=backspaceButton",
+          "expect": "id=input,text=12"
+        },
+        {
+          "action": "click",
+          "selector": "id=clearButton"
+        },
+        {
+          "action": "click",
+          "selector": "id=nineButton",
+          "expect": "id=input,text=9"
+        }
+      ]
+    },
+    {
+      "id": "F10",
+      "screen": "Calculator",
+      "description": "The scientific switch shows the DEG indicator and the extra rows; √π! shows 2.681060001",
+      "steps": [
+        {
+          "action": "click",
+          "selector": "id=scientistModeSwitchButton",
+          "expect": "id=degreeTextView,text=DEG"
+        },
+        {
+          "action": "wait",
+          "selector": "id=degreeButton,text=RAD"
+        },
+        {
+          "action": "wait",
+          "selector": "id=log2Button"
+        },
+        {
+          "action": "click",
+          "selector": "id=squareButton"
+        },
+        {
+          "action": "click",
+          "selector": "id=piButton"
+        },
+        {
+          "action": "click",
+          "selector": "id=factorialButton",
+          "expect": "id=input,text=√π!"
+        },
+        {
+          "action": "wait",
+          "selector": "id=resultDisplay,text=2.681060001"
+        }
+      ],
+      "trajectory": "s04"
+    },
+    {
+      "id": "F11",
+      "screen": "Calculator",
+      "description": "Sine in degrees then radians: sin(30 shows 0.5, after RAD it shows -0.9880316241",
+      "steps": [
+        {
+          "action": "click",
+          "selector": "id=scientistModeSwitchButton",
+          "expect": "id=sineButton"
+        },
+        {
+          "action": "click",
+          "selector": "id=sineButton"
+        },
+        {
+          "action": "click",
+          "selector": "id=threeButton"
+        },
+        {
+          "action": "click",
+          "selector": "id=zeroButton",
+          "expect": "id=input,text=sin(30"
+        },
+        {
+          "action": "wait",
+          "selector": "id=resultDisplay,text=0.5"
+        },
+        {
+          "action": "click",
+          "selector": "id=degreeButton",
+          "expect": "id=degreeTextView,text=RAD"
+        },
+        {
+          "action": "wait",
+          "selector": "id=degreeButton,text=DEG"
+        },
+        {
+          "action": "wait",
+          "selector": "id=resultDisplay,text=-0.9880316241"
+        }
+      ]
+    },
+    {
+      "id": "F12",
+      "screen": "Calculator",
+      "description": "INV switches the labels; with the modulo button on, √ becomes # and 10#3 shows 1",
+      "steps": [
+        {
+          "action": "click",
+          "selector": "id=scientistModeSwitchButton",
+          "expect": "id=invButton"
+        },
+        {
+          "action": "click",
+          "selector": "id=invButton",
+          "expect": "id=sineButton,text=sin⁻¹"
+        },
+        {
+          "action": "wait",
+          "selector": "id=logarithmButton,text=10^"
+        },
+        {
+          "action": "wait",
+          "selector": "id=squareButton,text=#"
+        },
+        {
+          "action": "click",
+          "selector": "id=oneButton"
+        },
+        {
+          "action": "click",
+          "selector": "id=zeroButton"
+        },
+        {
+          "action": "click",
+          "selector": "id=squareButton"
+        },
+        {
+          "action": "click",
+          "selector": "id=threeButton",
+          "expect": "id=input,text=10#3"
+        },
+        {
+          "action": "wait",
+          "selector": "id=resultDisplay,text=1"
+        }
+      ]
+    },
+    {
+      "id": "F13",
+      "screen": "Calculator",
+      "description": "The history handle opens the empty history panel",
+      "steps": [
+        {
+          "action": "click",
+          "selector": "id=history_sliding_layout_button",
+          "waitMs": 600
+        },
+        {
+          "action": "wait",
+          "selector": "id=no_history_text,text=No History Available"
+        }
+      ],
+      "trajectory": "s03"
+    },
+    {
+      "id": "F14",
+      "screen": "Calculator",
+      "description": "= saves the calculation; the history panel lists it with its result",
+      "steps": [
+        {
+          "action": "click",
+          "selector": "id=oneButton"
+        },
+        {
+          "action": "click",
+          "selector": "id=twoButton"
+        },
+        {
+          "action": "click",
+          "selector": "id=addButton"
+        },
+        {
+          "action": "click",
+          "selector": "id=sevenButton"
+        },
+        {
+          "action": "click",
+          "selector": "id=equalsButton",
+          "expect": "id=input,text=19",
+          "waitMs": 500
+        },
+        {
+          "action": "click",
+          "selector": "id=history_sliding_layout_button",
+          "waitMs": 600
+        },
+        {
+          "action": "wait",
+          "selector": "id=history_item_calculation,text=12+7"
+        },
+        {
+          "action": "wait",
+          "selector": "id=history_item_result,text=19"
+        }
+      ]
+    },
+    {
+      "id": "F15",
+      "screen": "Calculator",
+      "description": "Tapping a history result inserts it in parentheses",
+      "steps": [
+        {
+          "action": "click",
+          "selector": "id=oneButton"
+        },
+        {
+          "action": "click",
+          "selector": "id=twoButton"
+        },
+        {
+          "action": "click",
+          "selector": "id=addButton"
+        },
+        {
+          "action": "click",
+          "selector": "id=sevenButton"
+        },
+        {
+          "action": "click",
+          "selector": "id=equalsButton",
+          "waitMs": 500
+        },
+        {
+          "action": "click",
+          "selector": "id=clearButton"
+        },
+        {
+          "action": "click",
+          "selector": "id=history_sliding_layout_button",
+          "waitMs": 600
+        },
+        {
+          "action": "click",
+          "selector": "id=history_item_result,text=19",
+          "expect": "id=input,text=(19)"
+        }
+      ]
+    },
+    {
+      "id": "F16",
+      "screen": "Calculator",
+      "description": "The overflow menu lists its four items; Clear History empties the history",
+      "steps": [
+        {
+          "action": "click",
+          "selector": "id=fourButton"
+        },
+        {
+          "action": "click",
+          "selector": "id=addButton"
+        },
+        {
+          "action": "click",
+          "selector": "id=fourButton"
+        },
+        {
+          "action": "click",
+          "selector": "id=equalsButton",
+          "expect": "id=input,text=8",
+          "waitMs": 500
+        },
+        {
+          "action": "click",
+          "selector": "id=menuButton",
+          "expect": "id=app_menu_clear_history_button,text=Clear History"
+        },
+        {
+          "action": "wait",
+          "selector": "id=app_menu_settings_button,text=Settings"
+        },
+        {
+          "action": "wait",
+          "selector": "id=app_menu_about_button,text=About"
+        },
+        {
+          "action": "wait",
+          "selector": "id=app_menu_donate_button,text=Support Us"
+        },
+        {
+          "action": "click",
+          "selector": "id=app_menu_clear_history_button",
+          "waitMs": 500
+        },
+        {
+          "action": "click",
+          "selector": "id=history_sliding_layout_button",
+          "waitMs": 600
+        },
+        {
+          "action": "wait",
+          "selector": "id=no_history_text"
+        }
+      ],
+      "trajectory": "s02"
+    },
+    {
+      "id": "F17",
+      "screen": "Calculator",
+      "description": "The history survives a restart",
+      "steps": [
+        {
+          "action": "click",
+          "selector": "id=fourButton"
+        },
+        {
+          "action": "click",
+          "selector": "id=multiplyButton"
+        },
+        {
+          "action": "click",
+          "selector": "id=sixButton"
+        },
+        {
+          "action": "click",
+          "selector": "id=equalsButton",
+          "expect": "id=input,text=24",
+          "waitMs": 800
+        },
+        {
+          "action": "relaunch"
+        },
+        {
+          "action": "click",
+          "selector": "id=history_sliding_layout_button",
+          "waitMs": 600
+        },
+        {
+          "action": "wait",
+          "selector": "id=history_item_calculation,text=4×6"
+        },
+        {
+          "action": "wait",
+          "selector": "id=history_item_result,text=24"
+        }
+      ]
+    },
+    {
+      "id": "F18",
+      "screen": "Calculator",
+      "description": "Support Us opens the donation dialog; Close dismisses it",
+      "steps": [
+        {
+          "action": "click",
+          "selector": "id=menuButton",
+          "expect": "id=app_menu_donate_button"
+        },
+        {
+          "action": "click",
+          "selector": "id=app_menu_donate_button",
+          "expect": "id=alertTitle,text=Support Us"
+        },
+        {
+          "action": "wait",
+          "selector": "id=paypalImage"
+        },
+        {
+          "action": "wait",
+          "selector": "id=bmacImage"
+        },
+        {
+          "action": "wait",
+          "selector": "id=githubImage"
+        },
+        {
+          "action": "click",
+          "selector": "id=button1,text=Close",
+          "waitMs": 500
+        },
+        {
+          "action": "wait",
+          "selector": "id=paypalImage",
+          "gone": true
+        }
+      ],
+      "trajectory": "s07"
+    },
+    {
+      "id": "F19",
+      "screen": "Calculator",
+      "description": "With the scientific rows shown, the history panel opens and the DEG indicator stays",
+      "steps": [
+        {
+          "action": "click",
+          "selector": "id=scientistModeSwitchButton",
+          "expect": "id=degreeTextView,text=DEG"
+        },
+        {
+          "action": "click",
+          "selector": "id=history_sliding_layout_button",
+          "waitMs": 600
+        },
+        {
+          "action": "wait",
+          "selector": "id=no_history_text"
+        },
+        {
+          "action": "wait",
+          "selector": "id=degreeTextView,text=DEG"
+        }
+      ],
+      "trajectory": "s09"
+    },
+    {
+      "id": "F20",
+      "screen": "Calculator",
+      "description": "With the history panel open, text typed into the input line is accepted",
+      "steps": [
+        {
+          "action": "click",
+          "selector": "id=history_sliding_layout_button",
+          "expect": "id=no_history_text",
+          "waitMs": 600
+        },
+        {
+          "action": "inputText",
+          "selector": "id=input",
+          "text": "Factory sample",
+          "expect": "id=input,text=Factory sample"
+        }
+      ],
+      "trajectory": "s08"
+    },
+    {
+      "id": "F21",
+      "screen": "Settings",
+      "description": "Settings opens with the original rows and defaults",
+      "steps": [
+        {
+          "action": "wait",
+          "selector": "text=GENERAL"
+        },
+        {
+          "action": "wait",
+          "selector": "id=settings_theme_summary,text=System (Material You)"
+        },
+        {
+          "action": "wait",
+          "selector": "id=settings_numbering_system_summary,text=International Numbering System"
+        },
+        {
+          "action": "wait",
+          "selector": "text=Vibrate when a button is pressed"
+        },
+        {
+          "action": "wait",
+          "selector": "id=settings_vibration_switch,checked=true"
+        },
+        {
+          "action": "wait",
+          "selector": "id=settings_radians_switch,checked=false"
+        },
+        {
+          "action": "wait",
+          "selector": "id=settings_scientific_mode_switch,checked=false"
+        },
+        {
+          "action": "wait",
+          "selector": "id=settings_split_parenthesis_switch,checked=false"
+        },
+        {
+          "action": "wait",
+          "selector": "id=settings_modulo_switch,checked=true"
+        }
+      ],
+      "trajectory": "s05"
+    },
+    {
+      "id": "F22",
+      "screen": "Settings",
+      "description": "The Theme row opens the four themes; picking Dark updates the summary",
+      "steps": [
+        {
+          "action": "click",
+          "selector": "id=settings_theme",
+          "expect": "text=Light"
+        },
+        {
+          "action": "wait",
+          "selector": "text=Amoled"
+        },
+        {
+          "action": "click",
+          "selector": "text=Dark",
+          "waitMs": 800
+        },
+        {
+          "action": "wait",
+          "selector": "id=settings_theme_summary,text=Dark"
+        }
+      ],
+      "trajectory": "s11"
+    },
+    {
+      "id": "F23",
+      "screen": "Settings",
+      "description": "Indian Numbering System groups 1234567 as 12,34,567 on the calculator",
+      "steps": [
+        {
+          "action": "click",
+          "selector": "id=settings_numbering_system",
+          "expect": "text=Indian Numbering System"
+        },
+        {
+          "action": "click",
+          "selector": "text=Indian Numbering System",
+          "waitMs": 500
+        },
+        {
+          "action": "wait",
+          "selector": "id=settings_numbering_system_summary,text=Indian Numbering System"
+        },
+        {
+          "action": "click",
+          "selector": "id=settings_back_button",
+          "expect": "id=sevenButton"
+        },
+        {
+          "action": "click",
+          "selector": "id=oneButton"
+        },
+        {
+          "action": "click",
+          "selector": "id=twoButton"
+        },
+        {
+          "action": "click",
+          "selector": "id=threeButton"
+        },
+        {
+          "action": "click",
+          "selector": "id=fourButton"
+        },
+        {
+          "action": "click",
+          "selector": "id=fiveButton"
+        },
+        {
+          "action": "click",
+          "selector": "id=sixButton"
+        },
+        {
+          "action": "click",
+          "selector": "id=sevenButton",
+          "expect": "id=input,text=\"12,34,567\""
+        }
+      ],
+      "trajectory": "s12"
+    },
+    {
+      "id": "F24",
+      "screen": "About",
+      "description": "About shows the original's sections, rows and version line",
+      "steps": [
+        {
+          "action": "wait",
+          "selector": "id=about_help,text=HELP US"
+        },
+        {
+          "action": "wait",
+          "selector": "id=about_donate,text=Donate"
+        },
+        {
+          "action": "wait",
+          "selector": "id=about_rate,text=Rate this app"
+        },
+        {
+          "action": "wait",
+          "selector": "id=about_social,text=SOCIAL"
+        },
+        {
+          "action": "wait",
+          "selector": "id=about_github,text=GitHub"
+        },
+        {
+          "action": "wait",
+          "selector": "id=about_category_info,text=APP INFO"
+        },
+        {
+          "action": "wait",
+          "selector": "id=about_license,text=License GPL 3.0"
+        },
+        {
+          "action": "wait",
+          "selector": "id=about_app_version,text=Version 3.2.0 (53)"
+        },
+        {
+          "action": "wait",
+          "selector": "id=about_about_made_in_france,text=Made with ❤️ in France"
+        }
+      ],
+      "trajectory": "s06"
+    },
+    {
+      "id": "F25",
+      "screen": "Settings",
+      "description": "Split parentheses replaces AC and ( ) by separate ( and ) keys",
+      "steps": [
+        {
+          "action": "click",
+          "selector": "id=settings_split_parenthesis_switch",
+          "expect": "id=settings_split_parenthesis_switch,checked=true"
+        },
+        {
+          "action": "click",
+          "selector": "id=settings_back_button",
+          "expect": "id=leftParenthesisButton"
+        },
+        {
+          "action": "wait",
+          "selector": "id=rightParenthesisButton"
+        },
+        {
+          "action": "wait",
+          "selector": "id=clearButton",
+          "gone": true
+        },
+        {
+          "action": "click",
+          "selector": "id=leftParenthesisButton"
+        },
+        {
+          "action": "click",
+          "selector": "id=twoButton",
+          "expect": "id=input,text=(2"
+        }
+      ]
+    },
+    {
+      "id": "F26",
+      "screen": "Settings",
+      "description": "With the modulo button off, INV turns √ into x² which squares: 3^2 shows 9",
+      "steps": [
+        {
+          "action": "click",
+          "selector": "id=settings_modulo_switch",
+          "expect": "id=settings_modulo_switch,checked=false"
+        },
+        {
+          "action": "click",
+          "selector": "id=settings_back_button",
+          "expect": "id=scientistModeSwitchButton"
+        },
+        {
+          "action": "click",
+          "selector": "id=scientistModeSwitchButton",
+          "expect": "id=invButton"
+        },
+        {
+          "action": "click",
+          "selector": "id=threeButton"
+        },
+        {
+          "action": "click",
+          "selector": "id=invButton",
+          "expect": "id=squareButton,text=x²"
+        },
+        {
+          "action": "click",
+          "selector": "id=squareButton",
+          "expect": "id=input,text=3^2"
+        },
+        {
+          "action": "wait",
+          "selector": "id=resultDisplay,text=9"
+        }
+      ]
+    },
+    {
+      "id": "F27",
+      "screen": "Settings",
+      "description": "Scientific mode by default shows the scientific rows on the calculator",
+      "steps": [
+        {
+          "action": "click",
+          "selector": "id=settings_scientific_mode_switch",
+          "expect": "id=settings_scientific_mode_switch,checked=true"
+        },
+        {
+          "action": "click",
+          "selector": "id=settings_back_button",
+          "expect": "id=sineButton",
+          "waitMs": 500
+        },
+        {
+          "action": "wait",
+          "selector": "id=degreeTextView,text=DEG"
+        }
+      ]
+    },
+    {
+      "id": "F28",
+      "screen": "Settings",
+      "description": "A switch change survives a restart",
+      "steps": [
+        {
+          "action": "click",
+          "selector": "id=settings_vibration_switch",
+          "expect": "id=settings_vibration_switch,checked=false",
+          "waitMs": 500
+        },
+        {
+          "action": "relaunch"
+        },
+        {
+          "action": "click",
+          "selector": "id=menuButton",
+          "expect": "id=app_menu_settings_button"
+        },
+        {
+          "action": "click",
+          "selector": "id=app_menu_settings_button",
+          "expect": "id=settings_vibration_switch"
+        },
+        {
+          "action": "wait",
+          "selector": "id=settings_vibration_switch,checked=false"
+        }
+      ]
+    },
+    {
+      "id": "F29",
+      "screen": "Settings",
+      "description": "Radians by default: after a restart the calculator starts in RAD",
+      "steps": [
+        {
+          "action": "click",
+          "selector": "id=settings_radians_switch",
+          "expect": "id=settings_radians_switch,checked=true",
+          "waitMs": 500
+        },
+        {
+          "action": "relaunch"
+        },
+        {
+          "action": "click",
+          "selector": "id=scientistModeSwitchButton",
+          "expect": "id=degreeTextView,text=RAD"
+        },
+        {
+          "action": "wait",
+          "selector": "id=degreeButton,text=DEG"
+        }
+      ]
+    }
+  ],
+  "constraints": [
+    "ArkTS/ArkUI state management V2 only: @ComponentV2 with @Local/@Param/@Event, @ObservedV2 classes with @Trace fields; no V1 decorators.",
+    "Navigation with one NavPathStack: Calculator is the home content (title bar hidden), Settings and About are NavDestinations with the design system app bar; screens pass each other nothing, shared state lives in the stores.",
+    "Persistence with @ohos.data.preferences only (flush after every write): the settings in one preferences file, the history as one JSON array string (JSON.stringify of typed History objects) under one key, as the original keeps it in SharedPreferences with Gson.",
+    "No network access and no INTERNET permission: the About rows that open web pages (Translate, Rate this app, GitHub, Discord, License GPL 3.0, Privacy policy) and the three Support Us buttons hand the URL to the system browser with context.startAbility (action ohos.want.action.viewData, entities entity.system.browsable, the URL as uri) and silently do nothing if that fails.",
+    "Dropped from the port (capability none or not available on OpenHarmony): the quick settings tile (MyTileService), showing on the lock screen, the wallpaper-derived Material You palette (the System theme follows the system light/dark mode with system colours) and the per-app language picker (the Language row only shows the system language).",
+    "Haptics: when Vibration is on, every key press triggers a short vibration with @ohos.vibrator (ohos.permission.VIBRATE, granted at install, no dialog); vibration errors are ignored.",
+    "Clipboard: a long press on the result line or on a history calculation/result copies its text with @ohos.pasteboard when Long press to copy value is on, then a toast \"Copied\".",
+    "Keep device awake: when on, the main window calls setWindowKeepScreenOn(true) while the app is in the foreground.",
+    "Arithmetic in ArkTS number (double): results are rounded half-even to the chosen number of decimal places (default 10) and trailing zeros after the point are removed; the parser, the percent, factorial (Lanczos gamma for non-integers), square-root and implicit-multiplication rules follow Calculator.kt and Expression.kt exactly; the data item ports them with unit tests that pin the expected texts used in the F-points.",
+    "Number formatting as on the recorded device (English locale): decimal separator \".\", grouping separator \",\", groups of three (International Numbering System) or 3 then 2 (Indian Numbering System: 1234567 shows 12,34,567); the subtract key is labelled \"−\" but inserts \"-\".",
+    "The input line never raises the system keyboard: it is a TextInput (id input) with the system keyboard suppressed (customKeyboard bound to an empty builder) so the caret can still be placed by touch; keys insert at the caret, and text typed into it directly is accepted and re-evaluated like key input.",
+    "The Calculator re-reads the settings every time it becomes visible again (coming back from Settings): split parentheses, modulo label, scientific mode by default, numbering system (re-formats the input), history size (trims the history, 0 hides the panel handle) and keep awake, as MainActivity.onResume does.",
+    "Visual: the calculator has no title bar; the top third is a rounded-bottom display panel (pale blue #D2E4F3 in light mode) holding the menu icon, the DEG/RAD indicator, the large input line and the grey result line, with a short dark bar (the history handle) at its bottom centre; below it a 4-column grid of large round keys.",
+    "Light, Dark and Amoled themes: Dark uses the system dark colours, Amoled uses a pure black background with black keys and light text; the theme applies at once through applicationContext.setColorMode.",
+    "Portrait layout only; the landscape and tablet layouts of the original are not ported."
+  ],
+  "permissions": [
+    {
+      "name": "ohos.permission.VIBRATE",
+      "reason": "Vibrate briefly when a calculator button is pressed (can be turned off in Settings)."
+    }
+  ],
+  "stores": [
+    {
+      "name": "CalculatorStore",
+      "purpose": "The calculation engine ported from Calculator.kt, Expression.kt and NumberFormatter.kt plus the input-editing rules of MainActivity; pure functions, nothing persisted.",
+      "methods": [
+        {
+          "name": "evaluate",
+          "params": [
+            {
+              "name": "input",
+              "type": "string"
+            },
+            {
+              "name": "degreeMode",
+              "type": "boolean"
+            },
+            {
+              "name": "precision",
+              "type": "number"
+            },
+            {
+              "name": "scientificNotation",
+              "type": "boolean"
+            },
+            {
+              "name": "numberingSystem",
+              "type": "number"
+            }
+          ],
+          "returns": "CalcResult",
+          "does": "Cleans the input like Expression.getCleanExpression (× → *, ÷ → /, grouping separators removed, implicit multiplication, √x → sqrt(x), percent rules: 50% = 0.5, 200+10% = 220, 5! → factorial(5), # = modulo, missing closing parentheses added, an extra ')' is a syntax error), evaluates it like Calculator.evaluate (trigonometry in degrees when degreeMode, else radians; inverse functions sin⁻¹ cos⁻¹ tan⁻¹, ln, log, log₂, exp, e, π, ^, ! via Lanczos gamma for non-integers), rounds half-even to precision decimals (1000 means no rounding), applies the scientific-notation rule (results >= 9999 or <= 0.1 written as %.4g, e.g. 12345 → 1.235E+4) when scientificNotation, turns any all-zero result into 0, removes trailing zeros after the point and formats the integer part with the numbering system (0 International, 1 Indian). Returns ok=true with value the formatted text (\"12+7\" → \"19\", \"7÷3\" → \"2.3333333333\", \"1234×5\" → \"6,170\", \"2^10\" → \"1,024\", \"√π!\" → \"2.681060001\", \"sin(30\" in degrees → \"0.5\", in radians → \"-0.9880316241\", \"10#3\" → \"1\"), or ok=false with error one of division_by_0, domain_error, syntax_error, require_real_number, infinity (value \"-\" when negative) and value \"\"; an empty input gives ok=false, error syntax_error."
+        },
+        {
+          "name": "errorMessage",
+          "params": [
+            {
+              "name": "result",
+              "type": "CalcResult"
+            }
+          ],
+          "returns": "Resource",
+          "does": "The text for a failed result: division_by_0 \"Can't divide by 0\", domain_error \"Domain error\", syntax_error \"Syntax error\", require_real_number \"Real number required\", infinity \"Value too large\" or \"-Infinity\" when value is \"-\"."
+        },
+        {
+          "name": "isErrorColoured",
+          "params": [
+            {
+              "name": "result",
+              "type": "CalcResult"
+            }
+          ],
+          "returns": "boolean",
+          "does": "True for division_by_0, domain_error, syntax_error and require_real_number (the screen paints input and result red #F44B3F after =), false for infinity and for ok results."
+        },
+        {
+          "name": "formatInput",
+          "params": [
+            {
+              "name": "text",
+              "type": "string"
+            },
+            {
+              "name": "numberingSystem",
+              "type": "number"
+            }
+          ],
+          "returns": "string",
+          "does": "NumberFormatter.format: removes the grouping separators and re-inserts them in every number of the text (\"1234×5\" → \"1,234×5\"; Indian: \"1234567\" → \"12,34,567\"); digits after the decimal point are left alone."
+        },
+        {
+          "name": "insertValue",
+          "params": [
+            {
+              "name": "text",
+              "type": "string"
+            },
+            {
+              "name": "caret",
+              "type": "number"
+            },
+            {
+              "name": "value",
+              "type": "string"
+            },
+            {
+              "name": "numberingSystem",
+              "type": "number"
+            }
+          ],
+          "returns": "InputEdit",
+          "does": "MainActivity.updateDisplay without the after-equals reset: inserts value at caret, re-formats the whole text and returns it with the caret placed right after the inserted value (accounting for added grouping separators). The screen clears the text first when the last action was = and value is an integer or the decimal point."
+        },
+        {
+          "name": "addSymbol",
+          "params": [
+            {
+              "name": "text",
+              "type": "string"
+            },
+            {
+              "name": "caret",
+              "type": "number"
+            },
+            {
+              "name": "symbol",
+              "type": "string"
+            },
+            {
+              "name": "numberingSystem",
+              "type": "number"
+            }
+          ],
+          "returns": "InputEdit",
+          "does": "MainActivity.addSymbol for + - ÷ × ^ ! %: ignores a repeated symbol, a symbol after √, after the decimal point or after '(' (except -), replaces a previous operator by the new one (a - after × or ÷ is appended instead), allows - on an empty input and refuses any other symbol there; returns the text unchanged when refused."
+        },
+        {
+          "name": "addPoint",
+          "params": [
+            {
+              "name": "text",
+              "type": "string"
+            },
+            {
+              "name": "caret",
+              "type": "number"
+            },
+            {
+              "name": "numberingSystem",
+              "type": "number"
+            }
+          ],
+          "returns": "InputEdit",
+          "does": "MainActivity.pointButton: inserts \".\" at caret unless the number around the caret already holds one."
+        },
+        {
+          "name": "addParentheses",
+          "params": [
+            {
+              "name": "text",
+              "type": "string"
+            },
+            {
+              "name": "caret",
+              "type": "number"
+            },
+            {
+              "name": "numberingSystem",
+              "type": "number"
+            }
+          ],
+          "returns": "InputEdit",
+          "does": "MainActivity.parenthesesButton: inserts \"(\" when the parentheses before the caret are balanced or the previous character is '(' or an operator (and the next one is not an operator), otherwise \")\": pressing it, 2, +, 3, it again gives \"(2+3)\"."
+        },
+        {
+          "name": "backspace",
+          "params": [
+            {
+              "name": "text",
+              "type": "string"
+            },
+            {
+              "name": "caret",
+              "type": "number"
+            },
+            {
+              "name": "numberingSystem",
+              "type": "number"
+            }
+          ],
+          "returns": "InputEdit",
+          "does": "MainActivity.backspaceButton: removes a whole function name left of the caret (cos⁻¹( sin⁻¹( tan⁻¹( cos( sin( tan( ln( log( log₂( exp() or else one character, re-formats and returns the new caret; \"123\" → \"12\"; nothing happens at caret 0."
+        }
+      ]
+    },
+    {
+      "name": "HistoryStore",
+      "purpose": "The saved calculations, oldest first, as one JSON array string in preferences, trimmed to the history size.",
+      "methods": [
+        {
+          "name": "getAll",
+          "params": [],
+          "returns": "Promise<History[]>",
+          "does": "All saved entries, oldest first (the panel shows the newest at the bottom); an unreadable or missing value gives []."
+        },
+        {
+          "name": "addFromEquals",
+          "params": [
+            {
+              "name": "calculation",
+              "type": "string"
+            },
+            {
+              "name": "result",
+              "type": "string"
+            },
+            {
+              "name": "historySize",
+              "type": "number"
+            }
+          ],
+          "returns": "Promise<History | null>",
+          "does": "Called by =: ends the current auto-save run, then appends {id: a new UUID, calculation, result, time: Date.now() as a string} unless the last entry already has the same calculation (returns null then); drops the oldest entries beyond historySize (-1 = unlimited, 0 keeps nothing), saves and flushes, returns the new entry."
+        },
+        {
+          "name": "autoSave",
+          "params": [
+            {
+              "name": "calculation",
+              "type": "string"
+            },
+            {
+              "name": "result",
+              "type": "string"
+            },
+            {
+              "name": "historySize",
+              "type": "number"
+            }
+          ],
+          "returns": "Promise<History | null>",
+          "does": "Called while typing when Automatically save calculations is on and the result differs from the input: if an auto-save run is in progress and its entry still exists, updates that entry's calculation, result and time; otherwise appends a new entry and starts a run with its id. Trims to historySize, saves, returns the entry written."
+        },
+        {
+          "name": "endAutoSave",
+          "params": [],
+          "returns": "void",
+          "does": "Ends the current auto-save run so the next autoSave appends a new entry (called by AC, long press on ⌫ and =)."
+        },
+        {
+          "name": "remove",
+          "params": [
+            {
+              "name": "id",
+              "type": "string"
+            }
+          ],
+          "returns": "Promise<void>",
+          "does": "Deletes the entry with that id (swipe on a row) and saves; an unknown id does nothing."
+        },
+        {
+          "name": "clear",
+          "params": [],
+          "returns": "Promise<void>",
+          "does": "Deletes every entry (menu Clear History) and saves an empty list; the panel then shows \"No History Available\"."
+        },
+        {
+          "name": "trimToSize",
+          "params": [
+            {
+              "name": "historySize",
+              "type": "number"
+            }
+          ],
+          "returns": "Promise<History[]>",
+          "does": "Drops the oldest entries beyond historySize (-1 unlimited, 0 removes all), saves and returns the remaining list."
+        },
+        {
+          "name": "dateLabel",
+          "params": [
+            {
+              "name": "time",
+              "type": "string"
+            }
+          ],
+          "returns": "Resource",
+          "does": "The relative day of an entry like DateUtils.getRelativeTimeSpanString with DAY_IN_MILLIS: \"Today\", \"Yesterday\", \"%d days ago\" up to 6 days, else the date as \"MMM d\" (\"Nov 9\") passed as the argument of a string resource."
+        },
+        {
+          "name": "sameDay",
+          "params": [
+            {
+              "name": "a",
+              "type": "History"
+            },
+            {
+              "name": "b",
+              "type": "History"
+            }
+          ],
+          "returns": "boolean",
+          "does": "True when both entries fall on the same local calendar day (the panel shows history_time only on the first row of a day and a thin separator after the last)."
+        }
+      ]
+    },
+    {
+      "name": "SettingsStore",
+      "purpose": "The CalcSettings in one preferences file with the original's defaults, cached for synchronous reads.",
+      "methods": [
+        {
+          "name": "load",
+          "params": [],
+          "returns": "Promise<CalcSettings>",
+          "does": "Reads every field (missing ones take the CalcSettings defaults), caches and returns them; called once at startup before the first frame uses them."
+        },
+        {
+          "name": "current",
+          "params": [],
+          "returns": "CalcSettings",
+          "does": "The cached settings (defaults before load); screens read it synchronously."
+        },
+        {
+          "name": "save",
+          "params": [
+            {
+              "name": "settings",
+              "type": "CalcSettings"
+            }
+          ],
+          "returns": "Promise<void>",
+          "does": "Writes every field, flushes and updates the cache; the Settings page calls it after each change."
+        },
+        {
+          "name": "applyTheme",
+          "params": [
+            {
+              "name": "themeStyle",
+              "type": "number"
+            }
+          ],
+          "returns": "void",
+          "does": "Sets the application colour mode: 0 follow system, 1 light, 2 dark, 3 dark (Amoled; the screens also use pure black backgrounds when current().themeStyle is 3). Called at startup and when the theme changes."
+        },
+        {
+          "name": "themeName",
+          "params": [
+            {
+              "name": "themeStyle",
+              "type": "number"
+            }
+          ],
+          "returns": "Resource",
+          "does": "0 \"System (Material You)\", 1 \"Light\", 2 \"Dark\", 3 \"Amoled\"; any other value as 0."
+        },
+        {
+          "name": "numberingSystemName",
+          "params": [
+            {
+              "name": "numberingSystem",
+              "type": "number"
+            }
+          ],
+          "returns": "Resource",
+          "does": "0 \"International Numbering System\", 1 \"Indian Numbering System\"; any other value as 0."
+        },
+        {
+          "name": "precisionOptions",
+          "params": [],
+          "returns": "number[]",
+          "does": "[0,1,2,…,20,25,30,40,50,75,100,1000] in that order; 1000 stands for ∞."
+        },
+        {
+          "name": "precisionLabel",
+          "params": [
+            {
+              "name": "precision",
+              "type": "number"
+            }
+          ],
+          "returns": "string",
+          "does": "The number as text, \"∞\" for 1000."
+        },
+        {
+          "name": "historySizeOptions",
+          "params": [],
+          "returns": "number[]",
+          "does": "[0,10,20,50,100,200,500,1000,-1] in that order; -1 stands for ∞."
+        },
+        {
+          "name": "historySizeLabel",
+          "params": [
+            {
+              "name": "historySize",
+              "type": "number"
+            }
+          ],
+          "returns": "string",
+          "does": "The number as text, \"∞\" for -1."
+        },
+        {
+          "name": "languageName",
+          "params": [],
+          "returns": "string",
+          "does": "The system language's display name in itself via @ohos.i18n (\"English\")."
+        }
+      ]
+    }
+  ],
+  "workItems": [
+    {
+      "id": "data:Model",
+      "kind": "data",
+      "title": "Data layer",
+      "description": "Write the data layer behind its contract: entry/src/main/ets/model/CalculatorStore.ets, entry/src/main/ets/model/HistoryStore.ets, entry/src/main/ets/model/SettingsStore.ets already declare every method the screens call (the app spec's Data layer section), each with a stub body marked TODO(factory). Write every body, and init, which opens what the store keeps (the entry ability awaits it once before the first page; make a second call a no-op). Add private fields, helpers and more files in model/ as you need. Keep every signature exactly as generated: the screens are being written against them at the same time, and the merge is checked for each one. When storage fails, log the error with hilog and rethrow it: a method never resolves as if it had worked (an empty list for a database that did not open, an add that saved nothing), because the screens catch the rejection and show the spec's error states. init may log a failure and return (the entry ability opens the first page either way); a method called on a store whose storage did not open rejects. The entity classes (model/History.ets, model/CalcSettings.ets, model/CalcResult.ets, model/InputEdit.ets) are yours to extend; keep their Data interface, toJSON and fromJSON in step with the fields. A method that returns a ResourceColor gives a colour that belongs to the data (a category's): add each colour to resources/base/element/color.json and resources/dark/element/color.json under a name that starts with the store's, and return $r('app.color.<name>'). A method that returns a Resource gives a text the screens show as it is: add each text to resources/base/element/string.json under a name that starts with the store's, and return $r('app.string.<name>') (a value inside the text is an argument: \"Filter: %s\" and $r('app.string.<name>', summary)). Write no text a user reads in English in the data layer, not even where the contract returns a string (a formatted date, a label inside a longer value): take it from the resources with the context init received, this.context.resourceManager.getStringByNameSync('<name>', ...args), and a count with getIntPluralStringByNameSync('<name>', n, n) (plurals in resources/base/element/plural.json); by name, not by $r(…).id: the unit tests run the store inside the test HAP, which numbers the same resources differently, so an id fails there (\"Invalid resource ID\"), and a fallback text in English is the hard-coded string again. Bring unit tests: a hypium suite (a *.test.ets file with a default export, under entry/src/ohosTest/ets/test/model/; expect(x) has assertEqual, assertDeepEquals, assertTrue, assertFalse, assertNull, assertUndefined, assertContain, assertLarger, assertLess, assertClose, assertThrowError and the assertPromise… family; negate one with expect(x).not().assertEqual(y) (there is no assertNotEqual: a test file that does not compile runs no case)) with at least three cases over the operations the screens call (create and read back, update, delete), a case for each rule the spec states (a boundary, an order, a rounding, an unknown id), and persistence: a second store, `const fresh = new <Store>(); await fresh.init(context);`, finds what the first one saved (getInstance() returns the same object, so reading back through it proves nothing about storage). Each case asserts what its name says, and leaves the data as it found it: the suites run against the app's real storage on the device, so delete what a case added in afterEach. The orchestrator runs every suite on the device after the merge, and a failed case comes back to you.\n\nPersistence calls for this app, each compiled with this SDK and run on a device: write from them, they need no lookup.\n```ts\nimport { preferences } from '@kit.ArkData';\nimport type { common } from '@kit.AbilityKit';\n// Preferences (key-value; keep a list as one JSON string). Each entity class in model/ has toJSON (JSON.stringify calls it) and fromJSON\nconst prefs: preferences.Preferences = preferences.getPreferencesSync(context, { name: 'app_prefs' });   // context: common.Context; open once, share the instance\nconst raw = prefs.getSync('items', '[]') as string;\nconst parsed: Object = JSON.parse(raw) as Object;                   // in try/catch: a damaged value is an empty list, not a crash\nconst items: Item[] = Array.isArray(parsed) ? (parsed as ItemData[]).map((d: ItemData) => Item.fromJSON(d)) : [];\nprefs.putSync('items', JSON.stringify(items)); await prefs.flush(); // a value is only on disk after flush()\nprefs.deleteSync('items'); await prefs.flush();\n// The hypium suite (a store needs a context; take it inside beforeAll, and take the application context: RelationalStore refuses the bare getAppContext() with \"Illegal context\")\nimport { beforeAll, describe, expect, it } from '@ohos/hypium';\nimport { abilityDelegatorRegistry } from '@kit.TestKit';\nexport default function storeTest() {\n  describe('Store', () => {\n    let context: common.Context;\n    beforeAll(async () => { context = abilityDelegatorRegistry.getAbilityDelegator().getAppContext().getApplicationContext(); /* open the stores here */ });\n    it('adds_and_reads_back', 0, async () => { expect(rows.length).assertEqual(1); expect(total).assertLarger(3.9); });\n  });\n}\n```",
+      "ownedPaths": [
+        "entry/src/main/ets/model/**",
+        "entry/src/main/ets/common/**",
+        "entry/src/ohosTest/ets/test/model/**"
+      ]
+    },
+    {
+      "id": "screen:Calculator",
+      "kind": "screen",
+      "title": "Calculator screen",
+      "description": "Type a calculation on the keypad and read the live result; no app bar. The display panel shows the overflow icon (menuButton, three vertical dots, top right) that opens a popup menu with the items \"Clear History\" (app_menu_clear_history_button), \"Settings\" (app_menu_settings_button), \"About\" (app_menu_about_button) and \"Support Us\" (app_menu_donate_button); the input line (input, large black text, right-aligned) and the result line (resultDisplay, grey, right-aligned, red #F44B3F with the input on an error after =). Below, a first row of flat text keys without background: √ (squareButton), π (piButton), ^ (exponentButton), ! (factorialButton) and a round pale-blue key with a chevron down/up (scientistModeSwitchButton) that shows or hides two more flat rows: RAD/DEG (degreeButton), sin (sineButton), cos (cosineButton), tan (tangentButton), then INV (invButton), e (eButton), ln (naturalLogarithmButton), log (logarithmButton), log₂ (log2Button), and the DEG/RAD indicator (degreeTextView, grey, top left of the display) appears. Then 5 rows of 4 round keys (they become pill-shaped when the scientific rows are shown): AC (clearButton, pale lavender #E3DCFB), ( ) (parenthesesButton), % (divideBy100Button), ÷ (divideButton); 7 8 9 × (multiplyButton); 4 5 6 − (subtractButton); 1 2 3 + (addButton); 0 (zeroButton) · (pointButton) ⌫ (backspaceButton) = (equalsButton, light blue #C2E7FB); digit keys light grey #EFEFEF, operator keys and ( ) % pale blue #D2E4F3. With Split parentheses on, AC and ( ) are replaced by ( (leftParenthesisButton) and ) (rightParenthesisButton). INV switches the labels to sin⁻¹ cos⁻¹ tan⁻¹ e^ 10^ 2^ and √ to # (modulo, when Add a modulo button is on) or x². Long press on 0 offers 00 and 000; long press on ⌫ clears everything. The history handle (history_sliding_layout_button) slides the history panel down over the keypad: a list (history_recylcle_view) of rows (history_item_0, history_item_1, …), oldest first and scrolled to the newest at the bottom, each with the calculation (history_item_calculation), the result (history_item_result) and a relative day (history_time, shown only on the first row of each day); tapping a calculation or result inserts it wrapped in parentheses; swiping a row sideways deletes it when allowed; tapping the handle again or Back closes the panel. The Support Us dialog has the title \"Support Us\" (alertTitle), three wide rounded buttons drawn like the original's images: dark blue \"Donate on PayPal\" (paypalImage), yellow \"Buy me a coffee\" (bmacImage), charcoal \"GitHub Sponsor\" with a pink heart (githubImage), and a text button \"Close\" (button1). The data layer is being written at the same time as this screen: call the stores by their contract (the app spec's Data layer section) and do not read the files in model/, whose bodies are not written yet. The stores are open before any page shows; load what the screen shows in aboutToAppear and again when the user comes back to it (rule 12).",
+      "screens": [
+        "Calculator"
+      ],
+      "fPoints": [
+        "F1",
+        "F2",
+        "F3",
+        "F4",
+        "F5",
+        "F6",
+        "F7",
+        "F8",
+        "F9",
+        "F10",
+        "F11",
+        "F12",
+        "F13",
+        "F14",
+        "F15",
+        "F16",
+        "F17",
+        "F18",
+        "F19",
+        "F20",
+        "F23",
+        "F25",
+        "F26",
+        "F28",
+        "F29"
+      ],
+      "ownedPaths": [
+        "entry/src/main/ets/screens/CalculatorPage.ets",
+        "entry/src/main/ets/components/calculator/**",
+        "entry/src/ohosTest/ets/test/calculator/**"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "screen:Settings",
+      "kind": "screen",
+      "title": "Settings screen",
+      "description": "Change how the calculator behaves; every change is saved at once. An app bar with a back arrow (settings_back_button) and the title \"Settings\" (settings_back_button_text), then a scrolling list (not lazy) of rows with an icon on the left, a title and a grey description, a switch on the right for the on/off ones, and blue capital category headers. GENERAL: \"Language\" with the system language name as summary (settings_language, summary settings_language_summary, e.g. \"English\"; display only); \"Theme\" (settings_theme, summary settings_theme_summary) opens a single-choice dialog \"System (Material You)\", \"Light\", \"Dark\", \"Amoled\"; \"Numbering System\" (settings_numbering_system, summary settings_numbering_system_summary) opens a single-choice dialog \"International Numbering System\", \"Indian Numbering System\"; \"Vibration\" / \"Vibrate when a button is pressed\" (settings_vibration_switch, on); \"Radians\" / \"Use radians instead of degrees by default\" (settings_radians_switch, off); \"Scientific mode\" / \"Activate scientific mode by default\" (settings_scientific_mode_switch, off); \"Split the parentheses button into two buttons\" / \"Remove the \\\"AC\\\" button to split the parentheses button into two buttons\" (settings_split_parenthesis_switch, off); \"Add a modulo button\" / \"Replace the \\\"X²\\\" button with a modulo button (available when the \\\"INV\\\" button is pressed)\" (settings_modulo_switch, on). FORMATTING: \"Number of decimal places\" with the value as summary (settings_precision, default 10) opens a single-choice dialog 0 to 20, 25, 30, 40, 50, 75, 100, ∞; \"Number into scientific notation\" / \"Convert all results to scientific notation\" (settings_scientific_notation_switch, off). HISTORY: \"Results saved in history\" with the value as summary (settings_history_size, default 50) opens a single-choice dialog 0, 10, 20, 50, 100, 200, 500, 1000, ∞; \"Allow selective history deletion\" / \"Delete specific history element on swipe\" (settings_delete_on_swipe_switch, on); \"Automatically save calculations\" / \"Automatically save calculations in history without needing to click the equal button\" (settings_auto_save_switch, on). ADVANCED: \"Long press to copy value\" / \"Long press copies the text of the item instead of selecting it\" (settings_long_click_copy_switch, on); \"Keep device awake\" / \"Prevent device from sleeping while the app is in the foreground\" (settings_prevent_sleep_switch, off). A picked dialog option closes the dialog and updates the row summary at once. The data layer is being written at the same time as this screen: call the stores by their contract (the app spec's Data layer section) and do not read the files in model/, whose bodies are not written yet. The stores are open before any page shows; load what the screen shows in aboutToAppear and again when the user comes back to it (rule 12).",
+      "screens": [
+        "Settings"
+      ],
+      "fPoints": [
+        "F21",
+        "F22",
+        "F23",
+        "F25",
+        "F26",
+        "F27",
+        "F28",
+        "F29"
+      ],
+      "ownedPaths": [
+        "entry/src/main/ets/screens/SettingsPage.ets",
+        "entry/src/main/ets/components/settings/**",
+        "entry/src/ohosTest/ets/test/settings/**"
+      ],
+      "dependsOn": []
+    },
+    {
+      "id": "screen:About",
+      "kind": "screen",
+      "title": "About screen",
+      "description": "Read about the app and open its links. An app bar with a back arrow (about_back_button) and the title \"About\" (about_back_button_text), then rows with a black icon on the left and the text, grouped under blue capital headers with thin separators between groups: \"HELP US\" (about_help): \"Donate\" (about_donate, does nothing, as in the original), \"Translate\" (about_translate), \"Rate this app\" (about_rate); \"SOCIAL\" (about_social): \"GitHub\" (about_github), \"Discord\" (about_discord); \"APP INFO\" (about_category_info): \"License GPL 3.0\" (about_license), \"Privacy policy\" (about_privacy_policy), \"Version 3.2.0 (53)\" (about_app_version; tapping it four times shows the toast \"Thanks for using OpenCalc ❤️\"); then the line \"Made with ❤️ in France\" (about_about_made_in_france). Translate opens https://hosted.weblate.org/engage/opencalc/, Rate this app https://play.google.com/store/apps/details?id=com.darkempire78.opencalculator, GitHub https://github.com/Darkempire78/OpenCalc, Discord https://discord.com/invite/sPvJmY7mcV, License https://github.com/Darkempire78/OpenCalc/blob/main/LICENSE, Privacy policy the gist URL in AboutActivity.kt, all in the system browser. The data layer is being written at the same time as this screen: call the stores by their contract (the app spec's Data layer section) and do not read the files in model/, whose bodies are not written yet. The stores are open before any page shows; load what the screen shows in aboutToAppear and again when the user comes back to it (rule 12).",
+      "screens": [
+        "About"
+      ],
+      "fPoints": [
+        "F24"
+      ],
+      "ownedPaths": [
+        "entry/src/main/ets/screens/AboutPage.ets",
+        "entry/src/main/ets/components/about/**",
+        "entry/src/ohosTest/ets/test/about/**"
+      ],
+      "dependsOn": []
+    }
+  ]
+}

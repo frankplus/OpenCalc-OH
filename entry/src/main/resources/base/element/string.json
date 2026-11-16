@@ -1,0 +1,44 @@
+{
+  "string": [
+    {
+      "name": "module_desc",
+      "value": "Port of OpenCalc (com.darkempire78.opencalculator 3.2.x): a calculator with a live result line, an optional scientific k"
+    },
+    {
+      "name": "EntryAbility_desc",
+      "value": "Port of OpenCalc (com.darkempire78.opencalculator 3.2.x): a calculator with a live result line, an optional scientific k"
+    },
+    {
+      "name": "EntryAbility_label",
+      "value": "Calculator"
+    },
+    {
+      "name": "kit_back",
+      "value": "Back"
+    },
+    {
+      "name": "kit_ok",
+      "value": "OK"
+    },
+    {
+      "name": "kit_cancel",
+      "value": "Cancel"
+    },
+    {
+      "name": "title_Calculator",
+      "value": "Calculator"
+    },
+    {
+      "name": "title_Settings",
+      "value": "Settings"
+    },
+    {
+      "name": "title_About",
+      "value": "About"
+    },
+    {
+      "name": "permission_reason_vibrate",
+      "value": "Vibrate briefly when a calculator button is pressed (can be turned off in Settings)."
+    }
+  ]
+}

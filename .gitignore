@@ -1,0 +1,14 @@
+build/
+.hvigor/
+oh_modules/
+.idea/
+.cxx/
+*.log
+.preview/
+entry/.preview/
+.factory-tmp/
+.cache/
+.test/
+oh-package-lock.json5
+**/oh-package-lock.json5
+local.properties
