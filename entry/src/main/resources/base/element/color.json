@@ -27,6 +27,7 @@
     { "name": "calculator_github", "value": "#24292E" },
     { "name": "calculator_heart", "value": "#EA4AAA" },
     { "name": "calculator_white", "value": "#FFFFFF" },
-    { "name": "calculator_black", "value": "#1A1A1A" }
+    { "name": "calculator_black", "value": "#1A1A1A" },
+    { "name": "about_header", "value": "#1565C0" }
   ]
 }
