@@ -165,6 +165,14 @@
       "value": "No History Available"
     },
     {
+      "name": "calculator_inv",
+      "value": "INV"
+    },
+    {
+      "name": "calculator_ac",
+      "value": "AC"
+    },
+    {
       "name": "calculator_close",
       "value": "Close"
     },

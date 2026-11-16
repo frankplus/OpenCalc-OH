@@ -21,7 +21,8 @@ export struct CalculatorPage {
   @Local resultText: string = '';
   @Local errRes: Resource | null = null;
   @Local errorShown: boolean = false;
-  @Local sci: boolean = false;
+  @Provider('calcPill') sci: boolean = false;
+  @Provider('calcAmoled') amoled: boolean = false;
   @Local inv: boolean = false;
   @Local rad: boolean = false;
   @Local split: boolean = false;
@@ -81,6 +82,7 @@ export struct CalculatorPage {
       this.panelOpen = false;
     }
     this.numbering = s.numberingSystem;
+    this.amoled = s.themeStyle === 3;
     this.keepAwake(s.preventPhoneFromSleepingMode);
   }
 
@@ -126,7 +128,6 @@ export struct CalculatorPage {
   private async loadHistory(): Promise<void> {
     try {
       this.history = await this.store.getAll();
-      setTimeout(() => { this.scroller.scrollEdge(Edge.Bottom); }, 50);
     } catch (e) {
       hilog.error(0x0001, 'Calc', 'history load failed: %{public}s', JSON.stringify(e));
       this.fail();
@@ -380,10 +381,18 @@ export struct CalculatorPage {
             .constraintSize({ minHeight: 24, minWidth: 40 })
         }
         Blank()
-        IconButton({
-          symbol: $r('sys.symbol.more'), label: $r('app.string.calculator_more'), eid: 'menuButton',
-          onTap: () => { this.menuShown = true; }
-        }).bindMenu(this.menuShown, this.menu, { onDisappear: () => { this.menuShown = false; } })
+        Column({ space: 4 }) {
+          Circle().width(5).height(5).fill(AppColors.icon)
+          Circle().width(5).height(5).fill(AppColors.icon)
+          Circle().width(5).height(5).fill(AppColors.icon)
+        }
+        .id('menuButton')
+        .width(Size.tap)
+        .height(Size.tap)
+        .justifyContent(FlexAlign.Center)
+        .alignItems(HorizontalAlign.Center)
+        .onClick(() => { this.menuShown = true; })
+        .bindMenu(this.menuShown, this.menu, { onDisappear: () => { this.menuShown = false; } })
       }
       .width('100%')
       .padding({ top: Space.l })
@@ -438,7 +447,7 @@ export struct CalculatorPage {
     .width('100%')
     .height(240)
     .padding({ left: Space.l, right: Space.l })
-    .backgroundColor($r('app.color.calculator_panel'))
+    .backgroundColor(this.amoled ? $r('app.color.calculator_amoled') : $r('app.color.calculator_panel'))
     .borderRadius({ bottomLeft: Radius.l * 2, bottomRight: Radius.l * 2 })
   }
 
@@ -451,7 +460,7 @@ export struct CalculatorPage {
       CalcKey({ label: this.inv ? 'tan⁻¹' : 'tan', eid: 'tangentButton', kind: 4, keyHeight: 48, onTap: () => { this.onKey('tangentButton'); } })
     }
     Row() {
-      CalcKey({ label: 'INV', eid: 'invButton', kind: 4, keyHeight: 48, onTap: () => { this.onKey('invButton'); } })
+      CalcKey({ label: $r('app.string.calculator_inv'), eid: 'invButton', kind: 4, keyHeight: 48, onTap: () => { this.onKey('invButton'); } })
       CalcKey({ label: 'e', eid: 'eButton', kind: 4, keyHeight: 48, onTap: () => { this.onKey('eButton'); } })
       CalcKey({ label: this.inv ? 'e^' : 'ln', eid: 'naturalLogarithmButton', kind: 4, keyHeight: 48, onTap: () => { this.onKey('naturalLogarithmButton'); } })
       CalcKey({ label: this.inv ? '10^' : 'log', eid: 'logarithmButton', kind: 4, keyHeight: 48, onTap: () => { this.onKey('logarithmButton'); } })
@@ -480,7 +489,7 @@ export struct CalculatorPage {
           CalcKey({ label: '(', eid: 'leftParenthesisButton', kind: 1, onTap: () => { this.onKey('leftParenthesisButton'); } })
           CalcKey({ label: ')', eid: 'rightParenthesisButton', kind: 1, onTap: () => { this.onKey('rightParenthesisButton'); } })
         } else {
-          CalcKey({ label: 'AC', eid: 'clearButton', kind: 2, onTap: () => { this.onKey('clearButton'); } })
+          CalcKey({ label: $r('app.string.calculator_ac'), eid: 'clearButton', kind: 2, onTap: () => { this.onKey('clearButton'); } })
           CalcKey({ label: '( )', eid: 'parenthesesButton', kind: 1, onTap: () => { this.onKey('parenthesesButton'); } })
         }
         CalcKey({ label: '%', eid: 'divideBy100Button', kind: 1, onTap: () => { this.onKey('divideBy100Button'); } })
@@ -505,11 +514,14 @@ export struct CalculatorPage {
         CalcKey({ label: '+', eid: 'addButton', kind: 1, onTap: () => { this.onKey('addButton'); } })
       }
       Row() {
-        CalcKey({ label: '0', eid: 'zeroButton', onTap: () => { this.onKey('zeroButton'); } })
-          .bindContextMenu(this.zeroMenu, ResponseType.LongPress)
+        CalcKey({
+          label: '0', eid: 'zeroButton', zeroMenu: true,
+          onTap: () => { this.onKey('zeroButton'); },
+          onInsert: (v: string) => { this.insert(v); }
+        })
         CalcKey({ label: '.', eid: 'pointButton', onTap: () => { this.onKey('pointButton'); } })
         CalcKey({
-          symbol: $r('sys.symbol.arrow_left'), eid: 'backspaceButton',
+          label: '⌫', eid: 'backspaceButton',
           onTap: () => { this.onKey('backspaceButton'); },
           onLong: () => { this.buzz(); this.clearAll(); }
         })
@@ -535,7 +547,7 @@ export struct CalculatorPage {
           .constraintSize({ minHeight: 24 })
           .margin({ top: Space.xxl })
       } else {
-        List({ scroller: this.scroller }) {
+        List({ scroller: this.scroller, initialIndex: Math.max(0, this.history.length - 1) }) {
           Repeat<History>(this.history).each((ri: RepeatItem<History>) => {
             ListItem() {
               Column() {
@@ -674,7 +686,7 @@ export struct CalculatorPage {
     }
     .width('100%')
     .height('100%')
-    .backgroundColor(AppColors.background)
+    .backgroundColor(this.amoled ? $r('app.color.calculator_amoled') : AppColors.background)
     .id('page_Calculator')
   }
 }
